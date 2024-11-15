@@ -1,3 +1,5 @@
+Yay for data engineering!!!  
+
 Project from last year for reference:
 Jeremy's: https://github.com/nogibjj/jjtaa_FinalProjectDE
 Gunel's: https://github.com/nogibjj/ids706-final-project-bodyspeakbuddy
