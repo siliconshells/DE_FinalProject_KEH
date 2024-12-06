@@ -24,13 +24,18 @@ Parameters:
     Description: Database password
     NoEcho: true
 
+  # New parameter in place of GitHubConnection
+  GitHubConnectionArn:
+    Type: String
+    Description: ARN of the manually created GitHub connection
+
 Resources:
   AppRunnerService:
     Type: AWS::AppRunner::Service
     Properties:
       SourceConfiguration:
         AuthenticationConfiguration:
-          ConnectionArn: !Ref GitHubConnection
+          ConnectionArn: !Ref GitHubConnectionArn
         AutoDeploymentsEnabled: true
         CodeRepository:
           RepositoryUrl: !Ref GitHubRepo
@@ -40,11 +45,11 @@ Resources:
       InstanceConfiguration:
         InstanceRoleArn: !GetAtt AppRunnerInstanceRole.Arn
 
-  GitHubConnection:
-    Type: AWS::AppRunner::Connection
-    Properties:
-      ConnectionName: GitHubConnection
-      ProviderType: GITHUB
+  # GitHubConnection:
+  #   Type: AWS::AppRunner::Connection
+  #   Properties:
+  #     ConnectionName: GitHubConnection
+  #     ProviderType: GITHUB
 
   AppRunnerInstanceRole:
     Type: AWS::IAM::Role

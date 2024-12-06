@@ -27,4 +27,5 @@ jobs:
           GitHubBranch=${{ github.ref_name }},
           DBName=${{ secrets.DB_NAME }},
           DBUsername=${{ secrets.DB_USERNAME }},
-          DBPassword=${{ secrets.DB_PASSWORD }}
+          DBPassword=${{ secrets.DB_PASSWORD }},
+          GitHubConnectionArn=${{ secrets.APPRUNNER_CONNECTION_ARN }}
