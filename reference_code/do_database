@@ -1,0 +1,69 @@
+import psycopg2
+from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+# Function to save data to user_activity table
+def save_user_activity(conn, activity_id, activity_time, ingredients, username):
+    try:
+        cursor = conn.cursor()
+        query = """
+            INSERT INTO user_activity (activity_id, activity_time, ingredients, username)
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(query, (activity_id, activity_time, ingredients, username))
+        conn.commit()
+        print("Data saved successfully")
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        cursor.close()
+
+
+# Function to read data from user_activity table
+def read_user_activity(conn):
+    try:
+        cursor = conn.cursor()
+        query = "SELECT * FROM user_activity"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        for row in rows:
+            print(row)
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        cursor.close()
+
+
+if __name__ == "__main__":
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+        )
+        print("Connection successful")
+
+        # Example data
+        activity_id = 1
+        username = "jenny"
+        activity_time = datetime.now()
+        ingredients = "Flour, Sugar, Eggs"
+
+        # Save data to table
+        save_user_activity(conn, activity_id, activity_time, ingredients, username)
+
+        # Read data from table
+        print("Data in user_activity table:")
+        read_user_activity(conn)
+
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        if conn:
+            conn.close()
