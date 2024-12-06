@@ -17,10 +17,10 @@ Description: A microservice that suggests recipes based on available ingredients
 Description: A microservice that generates personalized memes based on trending topics or user-provided text.
 
 
-Information
-Database
-The temporary database is setup at:
-database-1.cr0maw0kkv38.us-east-1.rds.amazonaws.com
+Information   
+Database   
+The temporary database is setup at:    
+database-1.cr0maw0kkv38.us-east-1.rds.amazonaws.com     
 
-Two tables have been created as:
+Two tables have been created as:    
 ![Database](images/database_structure.png)
