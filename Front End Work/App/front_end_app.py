@@ -4,13 +4,13 @@ import requests
 app = Flask(__name__)
 
 
-# Home Page
+# Home page/search/admin button
 @app.route("/")
 def home():
     return render_template("search.html")
 
 
-# Book Search Route
+# Recipe search route
 @app.route("/search", methods=["POST"])
 def search_recipe():
     query = request.form["query"]
@@ -48,9 +48,9 @@ def book_details(key):
 
     return render_template("history_and_details.html", details=details)
 
-@app.route("/admin")
-def admin():
-    return render_template("admin.html")
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
 if __name__ == "__main__":
     app.run( port=3000, debug=True)
