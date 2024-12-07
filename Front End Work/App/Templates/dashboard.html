@@ -39,7 +39,7 @@
     <p>Click on the buttons below to view statistics about the page search history!</p>
 
     <button class="stats-button" onclick="showPopularFood()">Most Popular Food Searched</button>
-    <button class="stats-button" onclick="showTopDates()">Top Dates Searched</button>
+    <button class="stats-button" onclick="showTopDates()">Top Date Searched</button>
     <button class="back-button" onclick="goToMainPage()">Return to Main Page</button>
 
     <div class="result" id="result">
@@ -79,12 +79,12 @@
                 const topDatesList = topDates
                     .map((date, index) => `<li>${index + 1}. ${date}</li>`)
                     .join("");
-                document.getElementById("result").innerHTML = `<h3>Top 5 Dates Searched</h3><ol>${topDatesList}</ol>`;
+                document.getElementById("result").innerHTML = `<h3>Top Date Searched</h3><ol>${topDatesList}</ol>`;
             }
         }
 
         function goToMainPage() {
-            window.location.href = "index.html"; // Replace with the actual main page URL
+            window.location.href = "search.html";
         }
     </script>
 </body>
