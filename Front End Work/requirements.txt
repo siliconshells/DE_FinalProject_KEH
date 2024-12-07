@@ -1,0 +1,12 @@
+openai
+uvicorn
+python-dotenv
+sqlalchemy
+pandas
+pylint
+pytest
+nbval
+black
+ruff
+locust
+numpy

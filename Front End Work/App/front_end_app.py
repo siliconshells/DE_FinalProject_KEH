@@ -48,6 +48,7 @@ def book_details(key):
 
     return render_template("history_and_details.html", details=details)
 
+#returns stats dashboard
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
