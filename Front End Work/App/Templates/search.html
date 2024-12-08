@@ -1,3 +1,104 @@
-Kayla
+<!--This html is the main page to the website. 
+It will welcome users, and direct them on how to use the website. 
+This should ideally include formatting guidelines: "potatos tomatoes onions" 
+(we decided for simplicity the user should input multiple foods like this, or separated with commas. NO ANDS, it might fuck up the llm) 
+this page will also have a button to direct users to the "admin" stats dashboard"""
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            background: linear-gradient(to bottom, #f4f4f9, #e2ebf0); /* Gradient background */
+            color: #333; /* Text color */
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        button {
+            margin: 10px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .summary-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #008CBA;
+            color: white;
+        }
+        #ingredient-list {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        #ingredient-list ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Summary Statistics Button -->
+    <button class="summary-button" onclick="openStats()">Summary Statistics</button>
 
-"""This html is the main page to the website. It will welcome users, and direct them on how to use the website. This should ideally include formatting guidelines: "potatos tomatoes onions" (we decided for simplicity the user should input multiple foods like this, or separated with commas. NO ANDS, it might fuck up the llm) this page will also have a button to direct users to the "admin" stats dashboard"""
+    <h1>Ingredient Tracker</h1>
+    <p>Type an ingredient and click "Add Ingredient" or press Enter:</p>
+    <input type="text" id="ingredient-input" placeholder="Enter ingredient">
+    <button class="add-button" id="add-button">Add Ingredient</button>
+
+    <div id="ingredient-list">
+        <h3>Ingredients:</h3>
+        <ul id="list"></ul>
+    </div>
+
+    <script>
+        const addButton = document.getElementById('add-button');
+        const input = document.getElementById('ingredient-input');
+        const list = document.getElementById('list');
+
+        // Function to add the ingredient to the list
+        function addIngredient() {
+            const ingredient = input.value.trim(); // Get the input value and trim whitespace
+            if (ingredient) {
+                const listItem = document.createElement('li'); // Create a new list item
+                listItem.textContent = ingredient;
+                list.appendChild(listItem); // Add it to the list
+                input.value = ''; // Clear the input field
+            }
+        }
+
+        // Add ingredient when the button is clicked
+        addButton.addEventListener('click', addIngredient);
+
+        // Add ingredient when Enter is pressed
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') { // Check if the Enter key was pressed
+                addIngredient();
+            }
+        });
+
+        // Function to open the Summary Statistics page
+        function openStats() {
+            alert('Summary Statistics button clicked!'); // Replace with desired action, e.g., redirect
+        }
+    </script>
+</body>
+</html>
