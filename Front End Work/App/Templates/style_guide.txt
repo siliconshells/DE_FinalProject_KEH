@@ -1,8 +1,8 @@
-<!--Up for grabs? Kayla?
-"""This page will return the results of the history of the food link.
- Total creative freedom, I imagine backend people are going to return a paragraph, so maybe a nicely formatted blog-like page would be cool"""
-just kidding this may also need to be the recipe details page (text me if u have questions)
--->
+The below code is what is needed to get consistent fonts and that green bar at the top.
+There is a way to create a style.css file so each of the html pages we write could reference this 
+and we would have to write repeat code, but i couldnt get it to work. 
+so just pasting this here to copy as needed.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,7 +55,7 @@ just kidding this may also need to be the recipe details page (text me if u have
     </header>
 
     <main>
-        <p>Recipe details and history</p>
+        <p>Welcome to the new page!</p>
     </main>
 
     <script>

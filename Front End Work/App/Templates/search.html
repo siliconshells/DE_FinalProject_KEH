@@ -1,4 +1,4 @@
-<!--This html is the main page to the website. 
+<!--KAYLA This html is the main page to the website. 
 It will welcome users, and direct them on how to use the website. 
 This should ideally include formatting guidelines: "potatos tomatoes onions" 
 (we decided for simplicity the user should input multiple foods like this, or separated with commas. NO ANDS, it might fuck up the llm) 
@@ -10,21 +10,54 @@ this page will also have a button to direct users to the "admin" stats dashboard
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --background: linear-gradient(to bottom, #FFF8E1, #FFF8E1);
+            --primary-color: #81C784;
+            --secondary-color: #3D405B;
+            --accent-color: #FFB74D;
+            --text-color: #37474F;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
             line-height: 1.6;
-            background: linear-gradient(to bottom, #f4f4f9, #e2ebf0); /* Gradient background */
-            color: #333; /* Text color */
+            background: var(--background);
+            color: var(--text-color);
         }
-        h1 {
-            color: #333;
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
         }
-        p {
-            color: #555;
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777;
+            padding: 10px 0;
+            background-color: #52504c50;
         }
+
+        h1, p {
+            margin: 20px;
+        }
+
         button {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
             margin: 10px 0;
             padding: 10px 20px;
             font-size: 16px;
@@ -32,72 +65,188 @@ this page will also have a button to direct users to the "admin" stats dashboard
             border: none;
             border-radius: 5px;
         }
+
         .add-button {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
         }
+
         .summary-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #008CBA;
+            background-color: var(--secondary-color);
             color: white;
         }
+
+        #dropdown-container {
+            position: relative;
+            margin: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        #ingredient-dropdown {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #ingredient-dropdown li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #ingredient-dropdown li:hover {
+            background-color: #f0f0f0;
+        }
+
         #ingredient-list {
-            margin-top: 20px;
+            margin: 20px;
             padding: 10px;
             border: 1px solid #ddd;
             background-color: #f9f9f9;
             border-radius: 5px;
         }
-        #ingredient-list ul {
-            padding-left: 20px;
+
+        .ingredient-tag {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .ingredient-tag .remove {
+            margin-left: 8px;
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- Summary Statistics Button -->
-    <button class="summary-button" onclick="openStats()">Summary Statistics</button>
+    <!-- Header Section -->
+    <header>
+        <h1>Ingredient Tracker</h1>
+        <button class="summary-button" onclick="openStats()">Summary Statistics</button>
+    </header>
 
-    <h1>Ingredient Tracker</h1>
-    <p>Type an ingredient and click "Add Ingredient" or press Enter:</p>
-    <input type="text" id="ingredient-input" placeholder="Enter ingredient">
-    <button class="add-button" id="add-button">Add Ingredient</button>
+    <main>
+        <p>Search for an ingredient from the list below, then click the ingredient or press Enter:</p>
+        <div id="dropdown-container">
+            <input type="text" id="search-input" placeholder="Search ingredients...">
+            <ul id="ingredient-dropdown">
+                <!-- Dropdown options will be dynamically populated -->
+            </ul>
+        </div>
 
-    <div id="ingredient-list">
-        <h3>Ingredients:</h3>
-        <ul id="list"></ul>
-    </div>
+        <div id="ingredient-list">
+            <h3>Ingredients:</h3>
+            <div id="tags"></div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        &copy; 2024 IDS 706
+    </footer>
 
     <script>
-        const addButton = document.getElementById('add-button');
-        const input = document.getElementById('ingredient-input');
-        const list = document.getElementById('list');
+        const ingredients = [
+            "almonds", "apples", "arugula", "baking powder", "baking soda", "bananas", 
+            "basil", "beef", "beef broth", "bell peppers", "black beans", "blueberries", 
+            "bread crumbs", "broccoli", "brown sugar", "butter", "buttermilk", "carrots", 
+            "cashews", "celery", "cheddar", "cheese", "chicken", "chicken broth", 
+            "chickpeas", "chili powder", "chocolate chips", "cilantro", "cinnamon", 
+            "cocoa powder", "cornstarch", "cream", "cream cheese", "cranberries", 
+            "cucumber", "cumin", "eggs", "flour", "garlic", "ginger", "ground beef", 
+            "honey", "kale", "ketchup", "kidney beans", "ketchup", "kale", "kidney beans", 
+            "lemon", "lettuce", "lime", "maple syrup", "mayonnaise", "milk", 
+            "mozzarella", "mushrooms", "mustard", "nutmeg", "oats", "olive oil", 
+            "onion", "oregano", "oranges", "paprika", "parmesan", "parsley", "pasta", 
+            "peanut butter", "pears", "pepper", "peaches", "pineapple", "pork", 
+            "potatoes", "quinoa", "raisins", "rice", "rosemary", "salmon", "salt", 
+            "sausage", "shrimp", "soy sauce", "sour cream", "spinach", "strawberries", 
+            "sugar", "thyme", "tomato paste", "tomato sauce", "tomatoes", "tortillas", 
+            "tuna", "vanilla extract", "vegetable broth", "vinegar", "walnuts", 
+            "watermelon", "yogurt", "zucchini"
+        ];
 
-        // Function to add the ingredient to the list
-        function addIngredient() {
-            const ingredient = input.value.trim(); // Get the input value and trim whitespace
-            if (ingredient) {
-                const listItem = document.createElement('li'); // Create a new list item
-                listItem.textContent = ingredient;
-                list.appendChild(listItem); // Add it to the list
-                input.value = ''; // Clear the input field
-            }
+        const searchInput = document.getElementById('search-input');
+        const dropdown = document.getElementById('ingredient-dropdown');
+        const tagsDiv = document.getElementById('tags');
+
+        // Render the dropdown list
+        function renderDropdown(items) {
+            dropdown.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                li.addEventListener('click', () => {
+                    addTag(item);
+                    dropdown.innerHTML = ''; // Clear the dropdown
+                    searchInput.value = ''; // Clear search input
+                });
+                dropdown.appendChild(li);
+            });
         }
 
-        // Add ingredient when the button is clicked
-        addButton.addEventListener('click', addIngredient);
+        // Filter dropdown based on input
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            const filtered = ingredients.filter(item =>
+                item.toLowerCase().startsWith(query) // Only matches items that start with the query
+            );
+            renderDropdown(filtered);
+        });
 
-        // Add ingredient when Enter is pressed
-        input.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') { // Check if the Enter key was pressed
-                addIngredient();
+        // Handle Enter key to add ingredient
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const query = searchInput.value.trim().toLowerCase();
+                const matchedIngredient = ingredients.find(item =>
+                    item.toLowerCase() === query // Exact match
+                );
+                if (matchedIngredient) {
+                    addTag(matchedIngredient);
+                    searchInput.value = ''; // Clear search input
+                    dropdown.innerHTML = ''; // Clear the dropdown
+                }
             }
         });
 
-        // Function to open the Summary Statistics page
+        // Add a tag to the list
+        function addTag(ingredient) {
+            const tag = document.createElement('span');
+            tag.className = 'ingredient-tag';
+            tag.innerHTML = `${ingredient} <span class="remove" onclick="removeTag(this)">x</span>`;
+            tagsDiv.appendChild(tag);
+        }
+
+        // Remove a tag
+        function removeTag(element) {
+            element.parentElement.remove();
+        }
+
+        // Render initial dropdown
+        renderDropdown(ingredients);
+
+        // Open Summary Statistics
         function openStats() {
-            alert('Summary Statistics button clicked!'); // Replace with desired action, e.g., redirect
+            alert('Summary Statistics button clicked!');
         }
     </script>
 </body>
