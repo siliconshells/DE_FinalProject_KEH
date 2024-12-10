@@ -32,9 +32,7 @@ Resources:
           CodeConfiguration:
             CodeConfigurationValues:
               Runtime: PYTHON_3
-              BuildCommand: |
-                python -m pip install --upgrade pip
-                pip3 install -r requirements.txt
+              BuildCommand: python -m pip install --upgrade pip && pip3 install -r requirements.txt
               StartCommand: python app.py
               Port: 8080
               RuntimeEnvironmentVariables:
