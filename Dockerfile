@@ -1,5 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.9-slim
+FROM python:3.13.1-bullseye
 
 
 # Set the working directory in the container
