@@ -1,6 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS App Runner service for Python Flask application'
 
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Stack Configuration"
+        Parameters:
+          - DisableRollback
+
+Properties:
+  DisableRollback: true
+
 Resources:
   AppRunnerService:
     Type: AWS::AppRunner::Service
