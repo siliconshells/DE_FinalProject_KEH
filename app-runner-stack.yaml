@@ -20,6 +20,10 @@ Resources:
               Runtime: PYTHON_3
               BuildCommand: pip install -r requirements.txt
               StartCommand: python app.py
+              Port: 8080
+              RuntimeEnvironmentVariables:
+                - Name: FLASK_ENV
+                  Value: production
             ConfigurationSource: API
       InstanceConfiguration:
         Cpu: '1 vCPU'
