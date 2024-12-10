@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 # from flask.logging import create_logger
 # import logging
 import psycopg2
-import os
+import json
 from dotenv import load_dotenv
 import boto3
 from botocore.exceptions import ClientError
@@ -54,6 +54,9 @@ def test_database():
     conn = None
     secrets = get_secrets()
     try:
+        secrets = json.loads(secrets["SecretString"])
+        # print(secrets["SecretString"]["DB_HOST"])
+
         conn = psycopg2.connect(
             host=secrets["DB_HOST"],
             port=5432,
