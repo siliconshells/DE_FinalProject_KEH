@@ -32,8 +32,12 @@ Resources:
           CodeConfiguration:
             CodeConfigurationValues:
               Runtime: PYTHON_3
-              BuildCommand: pip install -r requirements.txt
-              StartCommand: python app.py
+              Build:
+                Commands: 
+                  - python -m pip install --upgrade pip
+                  - pip3 install -r requirements.txt
+              Start:
+                Command: python app.py
               Port: 8080
               RuntimeEnvironmentVariables:
                 - Name: FLASK_ENV
