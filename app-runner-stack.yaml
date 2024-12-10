@@ -15,12 +15,12 @@ Resources:
           SourceCodeVersion:
             Type: BRANCH
             Value: main
-        CodeConfiguration:
-          CodeConfigurationValues:
-            Runtime: PYTHON_3
-            BuildCommand: pip install -r requirements.txt
-            StartCommand: python app.py
-          ConfigurationSource: API
+          CodeConfiguration:
+            CodeConfigurationValues:
+              Runtime: PYTHON_3
+              BuildCommand: pip install -r requirements.txt
+              StartCommand: python app.py
+            ConfigurationSource: API
       InstanceConfiguration:
         Cpu: '1 vCPU'
         Memory: '2 GB'
