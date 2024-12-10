@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Stats Dashboard</title>
+    <link  rel="stylesheet" link href="{{ url_for('static', filename='style.css') }}">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
         h1 {
             color: #333;
+            color: white;
         }
         button {
             margin: 10px 0;
@@ -27,6 +25,9 @@
         .back-button {
             background-color: #4CAF50;
             color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
         }
         .stats-button {
             background-color: #008CBA;
@@ -35,17 +36,23 @@
     </style>
 </head>
 <body>
-    <h1>Search Stats Dashboard</h1>
+    <header>
+        <h1>Search Stats Dashboard</h1>
+        <a class="back-button" href="/">Return to Main Page</a>
+    </header>
+   
     <p>Click on the buttons below to view statistics about the page search history!</p>
 
     <button class="stats-button" onclick="showPopularFood()">Most Popular Food Searched</button>
     <button class="stats-button" onclick="showTopDates()">Top Date Searched</button>
-    <button class="back-button" onclick="goToMainPage()">Return to Main Page</button>
 
     <div class="result" id="result">
         <!-- Results will be displayed here -->
     </div>
 
+    <footer>
+        &copy; 2024 IDS 706
+    </footer>
     <script>
         const jsonUrl = "https://example.com/data.json"; // Replace with your actual JSON URL
 
@@ -81,10 +88,6 @@
                     .join("");
                 document.getElementById("result").innerHTML = `<h3>Top Date Searched</h3><ol>${topDatesList}</ol>`;
             }
-        }
-
-        function goToMainPage() {
-            window.location.href = "search.html";
         }
     </script>
 </body>
