@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS App Runner service for Python Flask application'
 
+Parameters:
+  GitHubConnectionArn:
+    Type: String
+    Description: ARN of the GitHub connection
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -8,9 +13,6 @@ Metadata:
           default: "Stack Configuration"
         Parameters:
           - DisableRollback
-
-Properties:
-  DisableRollback: true
 
 Resources:
   AppRunnerService:
@@ -58,11 +60,6 @@ Resources:
       MaxConcurrency: 100
       MinSize: 1
       MaxSize: 10
-
-Parameters:
-  GitHubConnectionArn:
-    Type: String
-    Description: ARN of the GitHub connection
 
 Outputs:
   ServiceUrl:
