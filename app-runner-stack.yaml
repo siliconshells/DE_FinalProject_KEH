@@ -15,6 +15,27 @@ Metadata:
           - DisableRollback
 
 Resources:
+  AppRunnerServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+      Policies:
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: arn:aws:secretsmanager:us-east-1:182399709699:secret:flask_app_secrets-f2tk0b
+
   AppRunnerService:
     Type: AWS::AppRunner::Service
     DeletionPolicy: Retain
@@ -42,6 +63,7 @@ Resources:
       InstanceConfiguration:
         Cpu: '1 vCPU'
         Memory: '2 GB'
+        InstanceRoleArn: !GetAtt AppRunnerServiceRole.Arn
       HealthCheckConfiguration:
         Protocol: HTTP
         Path: /health

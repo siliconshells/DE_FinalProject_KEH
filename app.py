@@ -5,7 +5,8 @@ from flask import Flask, jsonify
 import psycopg2
 import os
 from dotenv import load_dotenv
-
+import boto3
+from botocore.exceptions import ClientError
 
 load_dotenv()
 
@@ -29,14 +30,35 @@ def hello(name):
     return jsonify(greeting)
 
 
+def get_secrets():
+
+    secret_name = "flask_app_secrets"
+    region_name = "us-east-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(service_name="secretsmanager", region_name=region_name)
+
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+
+    return get_secret_value_response
+
+
 @app.route("/test_database")
 def test_database():
+    conn = None
+    secrets = get_secrets()
     try:
         conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
+            host=secrets["DB_HOST"],
+            port=5432,
+            user=secrets["DB_USER"],
+            password=secrets["DB_PASSWORD"],
         )
         return "Connection successful"
     except Exception as e:
