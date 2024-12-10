@@ -17,6 +17,7 @@ Metadata:
 Resources:
   AppRunnerService:
     Type: AWS::AppRunner::Service
+    DeletionPolicy: Retain
     Properties:
       ServiceName: my-flask-app
       SourceConfiguration:
