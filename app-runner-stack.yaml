@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS App Runner service for Python Flask application'
+
+Resources:
+  AppRunnerService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: my-flask-app
+      SourceConfiguration:
+        AuthenticationConfiguration:
+          ConnectionArn: !Ref GitHubConnectionArn
+        AutoDeploymentsEnabled: true
+        CodeRepository:
+          RepositoryUrl: https://github.com/siliconshells/DE_FinalProject_KEH
+          SourceCodeVersion:
+            Type: BRANCH
+            Value: main
+        CodeConfiguration:
+          CodeConfigurationValues:
+            Runtime: PYTHON_3
+            BuildCommand: pip install -r requirements.txt
+            StartCommand: python app.py
+          ConfigurationSource: API
+      InstanceConfiguration:
+        Cpu: '1 vCPU'
+        Memory: '2 GB'
+      HealthCheckConfiguration:
+        Protocol: HTTP
+        Path: /health
+        HealthyThreshold: 1
+        UnhealthyThreshold: 5
+        Interval: 10
+        Timeout: 5
+      AutoScalingConfigurationArn: !Ref AppRunnerAutoScalingConfiguration
+      Tags:
+        - Key: Environment
+          Value: Production
+
+  AppRunnerAutoScalingConfiguration:
+    Type: AWS::AppRunner::AutoScalingConfiguration
+    Properties:
+      AutoScalingConfigurationName: my-flask-app-autoscaling
+      MaxConcurrency: 100
+      MinSize: 1
+      MaxSize: 10
+
+Parameters:
+  GitHubConnectionArn:
+    Type: String
+    Description: ARN of the GitHub connection
+
+Outputs:
+  ServiceUrl:
+    Description: URL of the App Runner service
+    Value: !GetAtt AppRunnerService.ServiceUrl
