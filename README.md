@@ -24,3 +24,8 @@ database-1.cr0maw0kkv38.us-east-1.rds.amazonaws.com
 
 Two tables have been created as:    
 ![Database](images/database_structure.png)
+
+# IDS 706 Final Project
+## Recipe Generator
+
+## [Demo Video](https://www.youtube.com/)
