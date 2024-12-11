@@ -15,6 +15,7 @@ Metadata:
           - DisableRollback
 
 Resources:
+  # 1. First, create VPC and networking components
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -35,16 +36,37 @@ Resources:
       VpcId: !Ref VPC
       CidrBlock: 10.0.2.0/24
       AvailabilityZone: !Select [1, !GetAZs '']
-  # Database Subnet Group
-  DBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: Subnet group for RDS database
-      SubnetIds: 
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
 
-  # Database Security Group
+  # 2. Create Route Tables
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
+
+  # 3. Create Security Groups
+  AppRunnerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for App Runner VPC connector
+      VpcId: !Ref VPC
+
   DatabaseSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -56,7 +78,50 @@ Resources:
           ToPort: 5432
           SourceSecurityGroupId: !Ref AppRunnerSecurityGroup
 
-  # RDS Instance
+  # 4. Create VPC Endpoints
+  SecretsManagerVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.secretsmanager
+      VpcId: !Ref VPC
+      PrivateDnsEnabled: true
+      VpcEndpointType: Interface
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      SecurityGroupIds:
+        - !Ref AppRunnerSecurityGroup
+
+  # 5. Create App Runner VPC Connector
+  AppRunnerVpcConnector:
+    Type: AWS::AppRunner::VpcConnector
+    Properties:
+      VpcConnectorName: !Sub ${AWS::StackName}-connector
+      Subnets:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      SecurityGroups:
+        - !Ref AppRunnerSecurityGroup
+
+  # 6. Create Database Resources
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS database
+      SubnetIds: 
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+
+  DatabaseSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-db-credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "dbadmin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
   PostgresDB:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -73,17 +138,7 @@ Resources:
         - !Ref DatabaseSecurityGroup
       PubliclyAccessible: false
 
-  # Database Credentials in Secrets Manager
-  DatabaseSecret:
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Name: !Sub ${AWS::StackName}-db-credentials
-      GenerateSecretString:
-        SecretStringTemplate: '{"username": "dbadmin"}'
-        GenerateStringKey: "password"
-        PasswordLength: 16
-        ExcludeCharacters: '"@/\'
-
+  # 7. Create IAM Role
   AppRunnerServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -107,10 +162,16 @@ Resources:
                   - !Ref DatabaseSecret
                   - arn:aws:secretsmanager:us-east-1:182399709699:secret:flask_app_secrets-f2tk0b
 
+  # 8. Finally, create App Runner Service
   AppRunnerService:
     Type: AWS::AppRunner::Service
+    DependsOn: PostgresDB
     DeletionPolicy: Retain
     Properties:
+      NetworkConfiguration:
+        EgressConfiguration:
+          EgressType: VPC
+          VpcConnectorArn: !GetAtt AppRunnerVpcConnector.VpcConnectorArn
       ServiceName: my-flask-app
       SourceConfiguration:
         AuthenticationConfiguration:
@@ -136,10 +197,8 @@ Resources:
                   Value: !GetAtt PostgresDB.Endpoint.Address
                 - Name: DB_PORT
                   Value: !GetAtt PostgresDB.Endpoint.Port
-
             ConfigurationSource: API
       InstanceConfiguration:
-        InstanceRoleArn: !GetAtt AppRunnerServiceRole.Arn
         Cpu: '1 vCPU'
         Memory: '2 GB'
         InstanceRoleArn: !GetAtt AppRunnerServiceRole.Arn
@@ -150,18 +209,6 @@ Resources:
         UnhealthyThreshold: 5
         Interval: 10
         Timeout: 5
-      AutoScalingConfigurationArn: !Ref AppRunnerAutoScalingConfiguration
-      Tags:
-        - Key: Environment
-          Value: Production
-
-  AppRunnerAutoScalingConfiguration:
-    Type: AWS::AppRunner::AutoScalingConfiguration
-    Properties:
-      AutoScalingConfigurationName: my-flask-app-autoscaling
-      MaxConcurrency: 100
-      MinSize: 1
-      MaxSize: 10
 
 Outputs:
   ServiceUrl:
