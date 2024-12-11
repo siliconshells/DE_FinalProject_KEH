@@ -6,17 +6,6 @@ Project from last year for reference:
 - Keon and Rafa: https://github.com/bugarin10/nfl_plotting
 - Jaxon: https://github.com/jaxonyue/DE-Group-Project
 
-
-
-Ideas
-1. Dream Vacation Planner
-Description: Build a microservice that recommends dream vacation itineraries based on user preferences, budget, and weather patterns.
-2. AI-Powered Recipe Suggestion
-Description: A microservice that suggests recipes based on available ingredients, dietary preferences, and time constraints.
-3. Memes-as-a-Service
-Description: A microservice that generates personalized memes based on trending topics or user-provided text.
-
-
 Information   
 Database   
 The temporary database is setup at:    
@@ -44,6 +33,8 @@ Two tables have been created as:
 
 ## AI Pair Programming
 how AI Pair Programming tools (Github Copilot and one more tool of your choice) were used in your development process.
+
+
 
 ## Possible Improvements
 
