@@ -1,4 +1,66 @@
-Uzo
-"""This html script needs to display the search results - this would be a list of the recipes that the llm returns. you can ask chat gpt to format it any way you'd like, ie "the search results should contain the dish name, and a url link that takes you to the history of the food", and a button to go back to the search page"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link  rel="stylesheet" link href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .button {
+            margin: 10px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+        .back-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .details-button {
+            background-color: #008CBA;
+            color: white;
+            padding: 5px 15px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Results for {{ query }}</h1>
+    {% if recipes %}
+        {% for recipe in recipes %}
+            <div class="result">
+                <h3>{{ recipe.label }}</h3>
+                <p><strong>Source:</strong> {{ recipe.source }}</p>
+                {% if recipe.image %}
+                    <img src="{{ recipe.image }}"  alt="Cover Image" style="max-height: 150px;">
+                {% endif %}
+                <br>
+                <a href="/recipes/{{ query }}/{{ loop.index}}" class="details-button">View Details</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No results found. Try a different query.</p>
+    {% endif %}
+    <a href="/" class="button back-button">Back to Search</a>
+</body>
+</html>
 
-It could be something similar to an online retailer, like each recipe is a little box, and the page displays a grid of boxes

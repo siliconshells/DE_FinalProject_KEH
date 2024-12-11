@@ -19,4 +19,5 @@ class WebsiteUser(HttpUser):
 # Reading Locust outputs:
 # Response time: How long it takes for the server to respond
 # Failures: Number of failed requests
-# RPS (Requests per second): Throughput of the server
+# RPS (Requests per second): Throughput of the server (how often does it succeed within a given time?)
+# ^^^ looking for the RPS to be 10000/second
