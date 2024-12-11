@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Stats Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link  rel="stylesheet" link href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        h1 {
+            color: white;
+        }
+        button {
+            font-family: 'Outfit', sans-serif;
+            margin: 10px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .back-button {
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .stats-button {
+            background-color: #008CBA;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Search Stats Dashboard</h1>
+        <a class="back-button" href="/">Return to Main Page</a>
+    </header>
+   
+    <p>Click on the buttons below to view statistics about the page search history!</p>
+
+    <button class="stats-button" onclick="showPopularFood()">Most Popular Food Searched</button>
+    <button class="stats-button" onclick="showTopDates()">Top Date Searched</button>
+
+    <div class="result" id="result">
+        <!-- Results will be displayed here -->
+    </div>
+
+    <footer>
+        &copy; 2024 IDS 706
+    </footer>
+
+    <script>
+        async function fetchData(type) {
+            const url = `http://127.0.0.1:8000/report/${type}`;
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    return await response.json();
+                } else {
+                    throw new Error(`Failed to fetch data: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById("result").innerHTML = `<p>Error fetching data. Please try again later.</p>`;
+                return null;
+            }
+        }
+
+        async function showPopularFood() {
+            const data = await fetchData("top_search");
+            console.log(data);
+            try {
+                if (data) {
+                const results = data.map(item => `<li>${item[0]}: ${item[1]} searches</li>`).join("");
+                document.getElementById("result").innerHTML = `<h3>Most Popular Food Searched</h3><ul>${results}</ul>`;
+            }
+
+            } catch(error) {
+                console.error("Error fetching data:", error);
+            }
+  
+        }
+
+        async function showTopDates() {
+            const data = await fetchData("busiest_day");
+            try {
+                if (data) {
+                    const results = data.map(item => `<li>${item[0]}: ${item[1]} activities</li>`).join("");
+                    document.getElementById("result").innerHTML = `<h3>Busiest Days</h3><ul>${results}</ul>`;
+                }
+            } catch(error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+    </script>
+</body>
+</html>
