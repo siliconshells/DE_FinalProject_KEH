@@ -6,6 +6,7 @@ import json
 from flask import Flask, request, render_template
 from datetime import datetime
 from dotenv import load_dotenv
+from flask_cors import CORS
 import boto3
 
 
@@ -13,6 +14,7 @@ import boto3
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Edamam credentials
 EDAMAM_APP_ID = os.getenv('EDAMAM_APP_ID')
