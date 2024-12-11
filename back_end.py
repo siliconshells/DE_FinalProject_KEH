@@ -1,40 +1,68 @@
-
 import requests
 import psycopg2
-import os
 import json
 from flask import Flask, request, render_template
 from datetime import datetime
 from dotenv import load_dotenv
 from flask_cors import CORS
 import boto3
-
+from botocore.exceptions import ClientError
 
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+secrets = None
+
+
+def get_secrets():
+    secret_name = "flask_app_secrets"
+    region_name = "us-east-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(service_name="secretsmanager", region_name=region_name)
+
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+
+    return get_secret_value_response
+
+
+def get_a_secret(secret):
+    global secrets
+    if secrets is None:
+        secrets = get_secrets()
+        secrets = json.loads(secrets["SecretString"])
+    return secrets[secret]
+
 
 # Edamam credentials
-EDAMAM_APP_ID = os.getenv('EDAMAM_APP_ID')
-EDAMAM_APP_KEY = os.getenv('EDAMAM_APP_KEY')
-EDAMAM_API_URL = os.getenv('EDAMAM_API_URL')
+EDAMAM_APP_ID = get_a_secret("EDAMAM_APP_ID")
+EDAMAM_APP_KEY = get_a_secret("EDAMAM_APP_KEY")
+EDAMAM_API_URL = get_a_secret("EDAMAM_API_URL")
 
 # PostgreSQL connection details
 DB_CONFIG = {
-    "host": os.getenv('DBHOST'),
-    "user": os.getenv('DBUSER'),
-    "password": os.getenv('DBPASSWORD'),
-    "port": os.getenv('DBPORT'),
+    "host": get_a_secret("DB_HOST"),
+    "user": get_a_secret("DB_USER"),
+    "password": get_a_secret("DB_PASSWORD"),
+    "port": 5432,
 }
 
 # Amazon LLM Connection Credientials
-AWS_ACCESS_KEY_ID=os.getenv("AWS_ACCESS_KEY_ID"),
-AWS_SECRET_ACCESS_KEY=os.getenv("AWS_SECRET_ACCESS_KEY")
-BEDROCK_MODEL_ID=os.getenv("BEDROCK_MODEL_ID")
+AWS_ACCESS_KEY_ID = (get_a_secret("AWS_ACCESS_KEY_ID"),)
+AWS_SECRET_ACCESS_KEY = get_a_secret("AWS_SECRET_ACCESS_KEY")
+BEDROCK_MODEL_ID = get_a_secret("BEDROCK_MODEL_ID")
 
 client = boto3.client("bedrock-runtime", region_name="us-west-2")
+
+
 def prompt(llm_input):
 
     prompt = llm_input
@@ -62,7 +90,7 @@ def prompt(llm_input):
         return model_response
     except Exception as e:
         raise Exception(f"Error: {e}")
-    
+
 
 # Establish database connection
 def get_db_connection():
@@ -92,8 +120,7 @@ def save_user_activity(conn, activity_time, ingredients, username):
         cursor.close()
 
 
-@app.route("/query/<ingredients>", methods=["GET", "POST"])
-def index(ingredients):
+def get_ingredients(ingredients):
     if ingredients:
         conn = get_db_connection()
         if conn:
@@ -101,23 +128,20 @@ def index(ingredients):
                 # Save user activity to the database
                 activity_time = datetime.now()
                 username = "guest_user"  # Replace with actual username if available
-                save_user_activity(
-                    conn, activity_time, ingredients, username
-                )
+                save_user_activity(conn, activity_time, ingredients, username)
             finally:
                 conn.close()
 
         # Query Bedrock for ingredient histories
-        ingredient_histories = prompt(f"Please return a short history of the following ingredients: {ingredients}")
+        ingredient_histories = prompt(
+            f"Please return a short history of the following ingredients: {ingredients}"
+        )
 
         # Search for recipes using Edamam API
         recipes = search_recipes(ingredients)
 
         # Combine and return results
-        return {
-            "ingredient_histories": ingredient_histories,
-            "recipes": recipes
-        }
+        return {"ingredient_histories": ingredient_histories, "recipes": recipes}
 
 
 def search_recipes(query):
@@ -142,8 +166,8 @@ def report(type_of_report):
     conn = get_db_connection()
     if conn:
         try:
-            query_string = ("SELECT * FROM user_activity ORDER BY activity_time DESC")
-            if type_of_report == "busiest_day": 
+            query_string = "SELECT * FROM user_activity ORDER BY activity_time DESC"
+            if type_of_report == "busiest_day":
                 query_string = """SELECT activity_time, COUNT(*) AS occurrence_count
                                 FROM user_activity
                                 GROUP BY activity_time
@@ -168,6 +192,5 @@ def report(type_of_report):
         return "Error: Could not connect to the database."
 
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5001)

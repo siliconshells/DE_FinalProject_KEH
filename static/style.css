@@ -1,0 +1,42 @@
+/* I could not get this to work :(( --Kayla */
+/* style.css */
+:root {
+    --background: linear-gradient(to bottom, #FFF8E1, #FFF8E1);
+    --primary-color: #81C784;
+    --secondary-color: #3D405B;
+    --accent-color: #FFB74D;
+    --text-color: #37474F;
+}
+
+
+body {
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background: var(--background);
+    color: var(--text-color);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+}
+
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #777;
+    padding: 10px 0;
+    background-color: #52504c50;
+}
+
+h1, p {
+    margin: 20px;
+}
