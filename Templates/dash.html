@@ -59,7 +59,7 @@
 
     <script>
         async function fetchData(type) {
-            const url = `http://127.0.0.1:8000/report/${type}`;
+            const url = `/report/${type}`;
             try {
                 const response = await fetch(url);
                 if (response.ok) {

@@ -19,9 +19,6 @@ def search_recipe():
     query = ",".join(form_data)
     print(query)
 
-    # url = f"http://127.0.0.1:8000/query/{query}"
-    # response = requests.post(url)
-
     data = get_ingredients(query)
     if data:
         recipes = [
@@ -46,9 +43,6 @@ def search_recipe():
 def recipe_details(key, id):
     print(key)
     print(id)
-
-    # url = f"http://127.0.0.1:8000/query/{key}"
-    # response = requests.post(url)
 
     data = get_ingredients(key)
     if data:
@@ -86,6 +80,11 @@ def dashboard():
 @app.route("/health")
 def health_check():
     return {"status": "healthy"}, 200
+
+
+@app.route("/report/<type_of_report>")
+def get_report(type_of_report):
+    return report(type_of_report)
 
 
 if __name__ == "__main__":
