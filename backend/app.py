@@ -2,7 +2,6 @@
 import requests
 import psycopg2
 import os
-import google.generativeai as genai
 import json
 from flask import Flask, request, render_template
 from datetime import datetime
