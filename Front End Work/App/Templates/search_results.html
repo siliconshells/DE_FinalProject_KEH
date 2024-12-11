@@ -1,12 +1,10 @@
-Uzo
-"""This html script needs to display the search results - this would be a list of the recipes that the llm returns. you can ask chat gpt to format it any way you'd like, ie "the search results should contain the dish name, and a url link that takes you to the history of the food", and a button to go back to the search page"""
-"""It could be something similar to an online retailer, like each recipe is a little box, and the page displays a grid of boxes"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
+    <link  rel="stylesheet" link href="{{ url_for('static', filename='style.css') }}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,17 +44,17 @@ Uzo
     </style>
 </head>
 <body>
-    <h1>Search Results for "{{ query }}"</h1>
+    <h1>Search Results for {{ query }}</h1>
     {% if recipes %}
         {% for recipe in recipes %}
             <div class="result">
-                <h3>{{ recipe.Name }}</h3>
-                <p><strong>Ingredients:</strong> {{ recipe.Ingredients }}</p>
-                {% if recipe.cover_i %}
-                    <img src="https://covers.openlibrary.org/b/id/{{ recipe.cover_i }}-M.jpg" alt="Cover Image" style="max-height: 150px;">
+                <h3>{{ recipe.label }}</h3>
+                <p><strong>Source:</strong> {{ recipe.source }}</p>
+                {% if recipe.image %}
+                    <img src="{{ recipe.image }}"  alt="Cover Image" style="max-height: 150px;">
                 {% endif %}
                 <br>
-                <a href="/recipes/{{ recipe.key }}" class="details-button">View Details</a>
+                <a href="/recipes/{{ query }}/{{ loop.index}}" class="details-button">View Details</a>
             </div>
         {% endfor %}
     {% else %}

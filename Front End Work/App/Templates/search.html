@@ -90,38 +90,49 @@ this page will also have a button to direct users to the "admin" stats dashboard
             background-color: var(--accent-color);
             color: var(--text-color);
             padding: 5px 10px;
-            margin: 5px;
+            margin: 2px;
             border-radius: 15px;
             font-size: 0.9rem;
+            z-index: 0;
         }
 
-        .ingredient-tag .remove {
-            margin-left: 8px;
-            cursor: pointer;
-            color: red;
-            font-weight: bold;
+        #tags li {
+            display: inline-block;
+        }
+        .clk-rem {
+            font-style: italic;
+            font-weight: 300;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
     <!-- Header Section -->
     <header>
-        <h1>Ingredient Tracker</h1>
-        <a href="/dashboard" class="summary-button" >Summary Statistics</a>
+        <h1>Ingredient Search</h1>
+        <a href="/dash" class="summary-button" >Summary Statistics</a>
     </header>
-
+<!-- start new work -->
     <main>
-        <p>Search for an ingredient from the list below, then click the ingredient or press Enter:</p>
+        <p>Search for an ingredient or add one from the dropdown list, then click "Search Recipes" or press Enter:</p>
         <div id="dropdown-container">
             <input type="text" id="search-input" placeholder="Search ingredients...">
             <ul id="ingredient-dropdown">
                 <!-- Dropdown options will be dynamically populated -->
             </ul>
         </div>
-
-        <div id="ingredient-list">
-            <h3>Ingredients:</h3>
-            <div id="tags"></div>
+        <div>
+            <!-- Form to submit ingredients -->
+            <form id="ingredient-form"  action="/search" method="POST">
+                <div id="ingredient-list">
+                    <h3>Ingredients:</h3><br/>
+                    <span class="clk-rem">Click an ingredient to remove it from the list</span>
+                    <ul id="tags"></div>
+                </div>
+    
+                <!-- Submit button for form -->
+                <button type="submit" class="add-button">Search Recipes</button>
+            </form>
         </div>
     </main>
 
@@ -196,24 +207,29 @@ this page will also have a button to direct users to the "admin" stats dashboard
 
         // Add a tag to the list
         function addTag(ingredient) {
-            const tag = document.createElement('span');
-            tag.className = 'ingredient-tag';
-            tag.innerHTML = `${ingredient} <span class="remove" onclick="removeTag(this)">x</span>`;
+            const tag = document.createElement('li');
+            const input = document.createElement('input');
+            tag.appendChild(input);
+            input.type = 'text';
+            input.value = ingredient;
+            input.name = 'ingredient-tag';  
+            input.className = 'ingredient-tag';
+            input.readOnly = true;
+            input.addEventListener('click', () => {
+                removeTag(input);
+            })
             tagsDiv.appendChild(tag);
         }
 
         // Remove a tag
-        function removeTag(element) {
-            element.parentElement.remove();
+        function removeTag(removeButton) {
+            const tagContainer = removeButton.parentNode;
+            tagsDiv.removeChild(tagContainer);
         }
 
         // Render initial dropdown
         renderDropdown(ingredients);
 
-        // // Open Summary Statistics
-        // function openStats() {
-        //     alert('Summary Statistics button clicked!');
-        // }
     </script>
 </body>
 </html>

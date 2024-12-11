@@ -12,62 +12,74 @@ just kidding this may also need to be the recipe details page (text me if u have
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <link  rel="stylesheet" link href="{{ url_for('static', filename='style.css') }}">
     <style>
-        :root {
-            --primary-color: #81C784; /* Green */
-            --secondary-color: #3D405B; /* Darker color for buttons */
+        .container {
+            display: grid;
+            grid-template-columns: 1.5fr 0.5fr;
         }
-
-        body {
-            margin: 0;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        header {
+        .recipe-details-container {
+            outline: auto;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
         }
-
+        .history-container {
+            outline: auto;
+        }
         .summary-button {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--secondary-color);
+            background-color: #4CAF50;
             color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .back-button {
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
         }
 
-        .summary-button:hover {
-            opacity: 0.9;
-        }
     </style>
 </head>
 <body>
     <!-- Reusable Header -->
     <header>
-        <h1>Ingredient Tracker</h1>
-        <button class="summary-button" onclick="openStats()">Summary Statistics</button>
+        <h1>Recipe Details</h1>
+        <div>
+            <a class="back-button" href="/">Return to Main Page</a>
+            <a href="/dash" class="summary-button" onclick="openStats()">Summary Statistics</a>
+        </div>
     </header>
 
-    <main>
-        <p>Recipe details and history</p>
+    <main class="container">
+        <div class="recipe-details-container" >
+            <h2>{{recipe.label}}</h2>
+            <h4>Calories: {{(recipe.calories)}}</h4>
+            <p><strong>Source:</strong> {{recipe.source}}</p>
+            {% if recipe.image %}
+                <img src="{{ recipe.image }}"  alt="Cover Image" style="max-height: 400px; max-width: 400px; object-fit: cover;">
+            {% endif %}
+            <br>
+            <div class="recipe-details">
+                <h3>Ingredients:</h3>
+                <ul>
+                    {% for ing in recipe.ingredientLines %}
+                        <li>
+                            {{ing}}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <a href="{{recipe.url}}"  target="_blank">View Recipe Direction</a>
+            </div>
+        </div>
+        <div class="history-container">
+            <h3>History</h3>
+        </div>
     </main>
 
     <footer>
         &copy; 2024 IDS 706
     </footer>
-
-    <script>
-        // Define the function for the button
-        function openStats() {
-            alert('Summary Statistics button clicked!');
-        }
-    </script>
 </body>
 </html>
