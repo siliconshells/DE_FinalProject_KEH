@@ -16,7 +16,7 @@ Two tables have been created as:
 
 # IDS 706 Final Project: Recipe Generator
 ## [Demo Video](https://www.youtube.com/)
-# Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu
+### Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu
 
 ## Project Overview
 
