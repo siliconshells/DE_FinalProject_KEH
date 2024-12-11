@@ -15,7 +15,7 @@ Two tables have been created as:
 ![Database](images/database_structure.png)
 
 # IDS 706 Final Project: Recipe Generator
-[Demo Video](https://www.youtube.com/)
+[Demo Video](https://www.youtube.com/)  
 Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu
 
 ## Project Overview
