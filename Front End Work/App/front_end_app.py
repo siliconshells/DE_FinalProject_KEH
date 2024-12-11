@@ -17,13 +17,14 @@ def search_recipe():
     form_data = request.form.getlist('ingredient-tag')
     
     query = ",".join(form_data)
-    print(query)
+    print(query, "this is the query")
 
-    url = f"http://127.0.0.1:8000/query/{query}"
+    url = f"http://127.0.0.1:5001/query/{query}"
     response = requests.post(url)
-
+    
     if response.status_code == 200:
         data = response.json()
+        print(data, "this is the response")
         recipes = [
         {
             "label" : hit.get("recipe", {}).get("label"),
@@ -31,14 +32,15 @@ def search_recipe():
             "url": hit.get("recipe", {}).get("url"),
             "source": hit.get("recipe", {}).get("source"),
         }
-        for hit in data.get("hits", [])
+        for hit in data.get("recipes", {}).get("hits", [])
         ]
-        print(recipes)
+        print(recipes, "this is the recipe")
+        return render_template("search_results.html", recipes=recipes, query=query)
     else:
         data = {"results": []}
         print("-----NO RESPONSE FROM API-----")
 
-    return render_template("search_results.html", recipes=recipes, query=query)
+    return render_template("search_results.html")
 
 
 # Recipe Details Route
@@ -47,7 +49,7 @@ def recipe_details(key, id):
     print(key)
     print(id)
 
-    url = f"http://127.0.0.1:8000/query/{key}"
+    url = f"http://127.0.0.1:5001/query/{key}"
     response = requests.post(url)
 
     if response.status_code == 200:
@@ -62,7 +64,7 @@ def recipe_details(key, id):
             "calories": int(hit.get("recipe", {}).get("calories")),
             "url": hit.get("recipe", {}).get("url"),
         }
-        for hit in data.get("hits", [])
+        for hit in data.get("recipes", {}).get("hits", [])
         ]
 
         recipe = recipes[int(id) - 1]

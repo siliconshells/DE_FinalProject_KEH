@@ -31,7 +31,7 @@ def search_recipe():
                 "url": hit.get("recipe", {}).get("url"),
                 "source": hit.get("recipe", {}).get("source"),
             }
-            for hit in data.get("hits", [])
+            for hit in data.get("recipes", {}).get("hits", [])
         ]
         print(recipes)
     else:
@@ -63,7 +63,7 @@ def recipe_details(key, id):
                 "calories": int(hit.get("recipe", {}).get("calories")),
                 "url": hit.get("recipe", {}).get("url"),
             }
-            for hit in data.get("hits", [])
+            for hit in data.get("recipes", {}).get("hits", [])
         ]
 
         recipe = recipes[int(id) - 1]

@@ -37,6 +37,17 @@ footer {
     background-color: #52504c50;
 }
 
-h1, p {
+/* h1, p {
     margin: 20px;
+} */
+
+button, a {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+   background-color:  #488a4c;
+}
+a:hover {
+    background-color: #488a4c;
 }
