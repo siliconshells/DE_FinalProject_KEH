@@ -15,6 +15,75 @@ Metadata:
           - DisableRollback
 
 Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+  # Database Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS database
+      SubnetIds: 
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+
+  # Database Security Group
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for RDS instance
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref AppRunnerSecurityGroup
+
+  # RDS Instance
+  PostgresDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: myappdb
+      Engine: postgres
+      EngineVersion: 15.4
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      StorageType: gp2
+      MasterUsername: !Sub '{{resolve:secretsmanager:${DatabaseSecret}:SecretString:username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DatabaseSecret}:SecretString:password}}'
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups: 
+        - !Ref DatabaseSecurityGroup
+      PubliclyAccessible: false
+
+  # Database Credentials in Secrets Manager
+  DatabaseSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-db-credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "dbadmin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
   AppRunnerServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -34,7 +103,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: secretsmanager:GetSecretValue
-                Resource: arn:aws:secretsmanager:us-east-1:182399709699:secret:flask_app_secrets-f2tk0b
+                Resource: 
+                  - !Ref DatabaseSecret
+                  - arn:aws:secretsmanager:us-east-1:182399709699:secret:flask_app_secrets-f2tk0b
 
   AppRunnerService:
     Type: AWS::AppRunner::Service
@@ -59,8 +130,16 @@ Resources:
               RuntimeEnvironmentVariables:
                 - Name: FLASK_ENV
                   Value: production
+                - Name: DB_SECRET_ARN
+                  Value: !Ref DatabaseSecret
+                - Name: DB_HOST
+                  Value: !GetAtt PostgresDB.Endpoint.Address
+                - Name: DB_PORT
+                  Value: !GetAtt PostgresDB.Endpoint.Port
+
             ConfigurationSource: API
       InstanceConfiguration:
+        InstanceRoleArn: !GetAtt AppRunnerServiceRole.Arn
         Cpu: '1 vCPU'
         Memory: '2 GB'
         InstanceRoleArn: !GetAtt AppRunnerServiceRole.Arn
@@ -88,3 +167,9 @@ Outputs:
   ServiceUrl:
     Description: URL of the App Runner service
     Value: !GetAtt AppRunnerService.ServiceUrl
+  DatabaseEndpoint:
+    Description: Database endpoint
+    Value: !GetAtt PostgresDB.Endpoint.Address
+  DatabaseSecret:
+    Description: Database secret ARN
+    Value: !Ref DatabaseSecret
