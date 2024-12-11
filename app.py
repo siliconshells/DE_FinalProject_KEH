@@ -1,49 +1,87 @@
-from flask import Flask, jsonify
-from flask.logging import create_logger
-import logging
-import psycopg2
-import os
-from dotenv import load_dotenv
-
-
-load_dotenv()
-
+from flask import Flask, render_template, request
+import requests
+from back_end import *
 
 app = Flask(__name__)
-LOG = create_logger(app)
-LOG.setLevel(logging.INFO)
-
-# This is a temporary app to test CICD and IaC
 
 
+# Home page/search/admin button
 @app.route("/")
 def home():
-    html = f"<h3>Hi I am Flask.  I come to conquer-via Continuous Delivery</h3>"
-    return html.format(format)
+    return render_template("search.html")
 
 
-@app.route("/hi/<name>")
-def hello(name):
-    greeting = f"Hello: {name}"
-    return jsonify(greeting)
+# Recipe search route
+@app.route("/search", methods=["POST"])
+def search_recipe():
+    form_data = request.form.getlist("ingredient-tag")
+
+    query = ",".join(form_data)
+    print(query)
+
+    # url = f"http://127.0.0.1:8000/query/{query}"
+    # response = requests.post(url)
+
+    data = get_ingredients(query)
+    if data:
+        recipes = [
+            {
+                "label": hit.get("recipe", {}).get("label"),
+                "image": hit.get("recipe", {}).get("image"),
+                "url": hit.get("recipe", {}).get("url"),
+                "source": hit.get("recipe", {}).get("source"),
+            }
+            for hit in data.get("hits", [])
+        ]
+        print(recipes)
+    else:
+        data = {"results": []}
+        print("-----NO RESPONSE FROM API-----")
+
+    return render_template("search_results.html", recipes=recipes, query=query)
 
 
-@app.route("/test_database")
-def test_database():
-    try:
-        conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-        )
-        return "Connection successful"
-    except Exception as e:
-        print("Error:", e)
-    finally:
-        conn.close()
+# Recipe Details Route
+@app.route("/recipes/<key>/<id>")
+def recipe_details(key, id):
+    print(key)
+    print(id)
+
+    # url = f"http://127.0.0.1:8000/query/{key}"
+    # response = requests.post(url)
+
+    data = get_ingredients(key)
+    if data:
+        data = data.json()
+        recipes = [
+            {
+                "label": hit.get("recipe", {}).get("label"),
+                "ingredientLines": hit.get("recipe", {}).get("ingredientLines", []),
+                "image": hit.get("recipe", {}).get("image"),
+                "url": hit.get("recipe", {}).get("url"),
+                "source": hit.get("recipe", {}).get("source"),
+                "calories": int(hit.get("recipe", {}).get("calories")),
+                "url": hit.get("recipe", {}).get("url"),
+            }
+            for hit in data.get("hits", [])
+        ]
+
+        recipe = recipes[int(id) - 1]
+        print(recipe)
+
+        return render_template("history_and_details.html", recipe=recipe)
+    else:
+        data = {"results": []}
+        print("-----NO RESPONSE FROM API-----")
+
+    return render_template("history_and_details.html")
+
+
+# returns stats dashboard
+@app.route("/dash")
+def dashboard():
+    return render_template("dash.html")
 
 
 if __name__ == "__main__":
-    # app.run(host="127.0.0.1", port=8081, debug=True)
-    app.run(host="0.0.0.0", port=5006, debug=True)
+    app.run(port=3000, debug=True)

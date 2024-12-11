@@ -1,5 +1,6 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.9-slim
+FROM python:3.13.1-bullseye
+
 
 # Set the working directory in the container
 # this allows for any subsequent commands to be run from this directory
@@ -10,12 +11,18 @@ WORKDIR /app
 # files in that directory into our container working directory
 COPY . /app
 
+# Leonard. Install dependencies for psycopg2
+#RUN apt-get install libpq-dev python3-dev
+RUN apt-get update && apt-get install -y libpq-dev gcc
+RUN pip install --upgrade pip setuptools wheel
+# RUN sudo apt-get install build-essential
+
 # Install any needed packages specified in requirements.txt
 # using --no-cache-dir to not cache the packages and save space
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 5005 available to the world outside this container
-EXPOSE 5006
+EXPOSE 8080
 
 # Define environment variable
 # FLASK_APP is a framework specific environmnent variable that tells
@@ -29,4 +36,4 @@ ENV FLASK_APP=app.py
 
 #a more secure option would be to specify the exact IP you plan to use 
 # (e.g.API gateway interface)
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5006"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]

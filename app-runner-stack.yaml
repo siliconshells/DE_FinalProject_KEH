@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS App Runner service for Python Flask application'
+
+Parameters:
+  GitHubConnectionArn:
+    Type: String
+    Description: ARN of the GitHub connection
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Stack Configuration"
+        Parameters:
+          - DisableRollback
+
+Resources:
+  AppRunnerServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+      Policies:
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: arn:aws:secretsmanager:us-east-1:182399709699:secret:flask_app_secrets-f2tk0b
+
+  AppRunnerService:
+    Type: AWS::AppRunner::Service
+    DeletionPolicy: Retain
+    Properties:
+      ServiceName: my-flask-app
+      SourceConfiguration:
+        AuthenticationConfiguration:
+          ConnectionArn: !Ref GitHubConnectionArn
+        AutoDeploymentsEnabled: true
+        CodeRepository:
+          RepositoryUrl: https://github.com/siliconshells/DE_FinalProject_KEH
+          SourceCodeVersion:
+            Type: BRANCH
+            Value: main
+          CodeConfiguration:
+            CodeConfigurationValues:
+              Runtime: PYTHON_3
+              BuildCommand: python -m pip install --upgrade pip && pip3 install -r requirements.txt
+              StartCommand: python app.py
+              Port: 8080
+              RuntimeEnvironmentVariables:
+                - Name: FLASK_ENV
+                  Value: production
+            ConfigurationSource: API
+      InstanceConfiguration:
+        Cpu: '1 vCPU'
+        Memory: '2 GB'
+        InstanceRoleArn: !GetAtt AppRunnerServiceRole.Arn
+      HealthCheckConfiguration:
+        Protocol: HTTP
+        Path: /health
+        HealthyThreshold: 1
+        UnhealthyThreshold: 5
+        Interval: 10
+        Timeout: 5
+      AutoScalingConfigurationArn: !Ref AppRunnerAutoScalingConfiguration
+      Tags:
+        - Key: Environment
+          Value: Production
+
+  AppRunnerAutoScalingConfiguration:
+    Type: AWS::AppRunner::AutoScalingConfiguration
+    Properties:
+      AutoScalingConfigurationName: my-flask-app-autoscaling
+      MaxConcurrency: 100
+      MinSize: 1
+      MaxSize: 10
+
+Outputs:
+  ServiceUrl:
+    Description: URL of the App Runner service
+    Value: !GetAtt AppRunnerService.ServiceUrl
