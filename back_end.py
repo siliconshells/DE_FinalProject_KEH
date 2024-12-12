@@ -17,19 +17,19 @@ secrets = None
 
 
 def get_secrets():
-    secret_name = "flask_app_secrets"
-    region_name = "us-east-1"
 
     # Create a Secrets Manager client
-    session = boto3.session.Session()
-    # session = boto3.Session(
-    #     aws_access_key_id="AKIASU566WIB643O4OL3",
-    #     aws_secret_access_key="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",
-    # )
-    client = session.client(service_name="secretsmanager", region_name=region_name)
+    client = boto3.client(
+        aws_access_key_id="AKIASU566WIB643O4OL3",
+        aws_secret_access_key="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",
+        service_name="secretsmanager",
+        region_name="us-east-1",
+    )
 
     try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+        get_secret_value_response = client.get_secret_value(
+            SecretId="flask_app_secrets"
+        )
     except ClientError as e:
         # For a list of exceptions thrown, see
         # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
@@ -64,7 +64,12 @@ AWS_ACCESS_KEY_ID = (get_a_secret("AWS_ACCESS_KEY_ID"),)
 AWS_SECRET_ACCESS_KEY = get_a_secret("AWS_SECRET_ACCESS_KEY")
 BEDROCK_MODEL_ID = get_a_secret("BEDROCK_MODEL_ID")
 
-client = boto3.client("bedrock-runtime", region_name="us-west-2")
+client = boto3.client(
+    aws_access_key_id=get_a_secret("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=get_a_secret("AWS_SECRET_ACCESS_KEY"),
+    service_name="bedrock-runtime",
+    region_name="us-west-2",
+)
 
 
 def prompt(llm_input):
