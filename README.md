@@ -9,9 +9,9 @@ Our project is a recipe suggestion tool designed to help users make the most of 
 ## Project Architecture
 ![architecture_program](images/de_final_diagram.png) 
 
-- **Microservice:** Build a microservice that interfaces with a data pipeline. You can choose Python or Rust for development. The microservice should include logging and be containerized using the Distroless Docker image. A Dockerfile must be included in your repository
-- **Data Engineering:** Your project should involve the use of a library specializing in data engineering such as Spark, Pandas, SQL, a vector database, or any other relevant library.
-- **Infastructure as Code (IaC):** Your project must utilize an IaC solution for infrastructure setup and management. You can choose among AWS CloudFormation, AWS SAM, AWS CDK, or the Serverless Framework.
+- **Microservice:** Python was used to build a microservice via Docker and AWS CloudFormation and App Runner.
+- **Data Engineering:** SQL queries were performed within AmazonRDS. AmazonRDS stored search data history from our site, which we were then able to query using SQL for the summary statistics page of our site. 
+- **Infastructure as Code (IaC):** AWS CloudFormation was the IaC solution utilized by our team for infastructure setup and management.
 - **API Usage:** This project utilizes the Edamam recipe API, which supplied the recipe details and images based on the user selected ingredients. The Amazon Bedrock LLM API was used to return history of the recipe selected by the user. 
   
 ## Load Test & Quantitative Assessment
