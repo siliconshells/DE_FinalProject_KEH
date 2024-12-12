@@ -38,7 +38,7 @@ Resources:
 
   AppRunnerService:
     Type: AWS::AppRunner::Service
-    DeletionPolicy: Delete
+    DeletionPolicy: Retain
     Properties:
       ServiceName: my-flask-app
       SourceConfiguration:
