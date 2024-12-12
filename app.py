@@ -19,9 +19,6 @@ def search_recipe():
     query = ",".join(form_data)
     print(query)
 
-    # url = f"http://127.0.0.1:8000/query/{query}"
-    # response = requests.post(url)
-
     data = get_ingredients(query)
     if data:
         recipes = [
@@ -31,7 +28,7 @@ def search_recipe():
                 "url": hit.get("recipe", {}).get("url"),
                 "source": hit.get("recipe", {}).get("source"),
             }
-            for hit in data.get("hits", [])
+            for hit in data.get("recipes", {}).get("hits", [])
         ]
         print(recipes)
     else:
@@ -47,9 +44,6 @@ def recipe_details(key, id):
     print(key)
     print(id)
 
-    # url = f"http://127.0.0.1:8000/query/{key}"
-    # response = requests.post(url)
-
     data = get_ingredients(key)
     if data:
         data = data.json()
@@ -63,7 +57,7 @@ def recipe_details(key, id):
                 "calories": int(hit.get("recipe", {}).get("calories")),
                 "url": hit.get("recipe", {}).get("url"),
             }
-            for hit in data.get("hits", [])
+            for hit in data.get("recipes", {}).get("hits", [])
         ]
 
         recipe = recipes[int(id) - 1]
@@ -83,5 +77,15 @@ def dashboard():
     return render_template("dash.html")
 
 
+@app.route("/health")
+def health_check():
+    return {"status": "healthy"}, 200
+
+
+@app.route("/report/<type_of_report>")
+def get_report(type_of_report):
+    return report(type_of_report)
+
+
 if __name__ == "__main__":
-    app.run(port=3000, debug=True)
+    app.run(host="0.0.0.0", port=8080)
