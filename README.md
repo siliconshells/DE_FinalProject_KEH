@@ -30,13 +30,12 @@ Our team believes the shortcomings in the load handling of our application stem 
 ## How to Run This Project
 
 ## AI Pair Programming
-how AI Pair Programming tools (Github Copilot and one more tool of your choice) were used in your development process.
-Github Copilot chat GPT for html databricks assistant to ensure things are running correctly
 While working on this project our team utilized tools such as GitHub Copilot, ChatGPT and DataBricks Assistant to ensure effective development and deployment. Our frontend team utilized ChatGPT to improve aesthetics of our html site. The backend team utilized Copilot and DB Assistant to ensure that the different aspects of our projects were interfacing together correctly 
 
 ## Possible Improvements
 Our team considered the possible areas for improvement given additional time, resources and specialized expertise:
 
 - Increase aesthetics and UI of our site, this was our team's first time writing html code
+- Add real-time feedback, like loading spinners, for API calls and loading on the site
 - Purchasing higher tier access of APIs in order to increase efficiency and decrease wait times
 
