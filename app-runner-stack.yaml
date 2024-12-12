@@ -75,7 +75,14 @@ Resources:
       Tags:
         - Key: Environment
           Value: Production
-
+      CustomDomain:
+        Type: AWS::AppRunner::CustomDomain
+        DeletionPolicy: Retain
+        Properties:
+          DomainName: de-recipe-generator.com
+          ServiceArn: !Ref AppRunnerService
+          EnableWWWSubdomain: true     # Optional: also enables www.your-domain.com
+        
   AppRunnerAutoScalingConfiguration:
     Type: AWS::AppRunner::AutoScalingConfiguration
     Properties:
