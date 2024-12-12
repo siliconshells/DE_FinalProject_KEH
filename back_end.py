@@ -21,11 +21,11 @@ def get_secrets():
     region_name = "us-east-1"
 
     # Create a Secrets Manager client
-    session = boto3.session.Session()
-    # session = boto3.Session(
-    #     aws_access_key_id="AKIASU566WIB643O4OL3",
-    #     aws_secret_access_key="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",
-    # )
+    # session = boto3.session.Session()
+    session = boto3.Session(
+        aws_access_key_id="AKIASU566WIB643O4OL3",
+        aws_secret_access_key="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",
+    )
     client = session.client(service_name="secretsmanager", region_name=region_name)
 
     try:
