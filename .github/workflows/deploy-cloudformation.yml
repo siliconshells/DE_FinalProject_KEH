@@ -31,11 +31,25 @@ jobs:
         template: app-runner-stack.yaml
         parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
 
-    - name: Associate custom domain
+    - name: Display the new URL
       run: |
-        SERVICE_ARN=$(aws cloudformation describe-stacks  --stack-name my-flask-app-stack  --query 'Stacks[0].Outputs[?OutputKey==`ServiceArn`].OutputValue' --output text)        
-        aws apprunner associate-custom-domain  --service-arn $SERVICE_ARN  --domain-name de-recipe-generator.com --enable-www-subdomain
+        SERVICE_ARN=$(aws cloudformation describe-stacks  --stack-name my-flask-app-stack  --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)        
+    #    SERVICE_ARN=$(aws cloudformation describe-stacks  --stack-name my-flask-app-stack  --query 'Stacks[0].Outputs[?OutputKey==`ServiceArn`].OutputValue' --output text)        
+    #    aws apprunner associate-custom-domain  --service-arn $SERVICE_ARN  --domain-name de-recipe-generator.com --enable-www-subdomain
 
-    - name: Wait for domain association
-      run: |
-        aws apprunner wait custom-domain-associated  --service-arn $SERVICE_ARN  --domain-name de-recipe-generator.com
+    # - name: Wait for domain association
+    #   run: |
+    #     aws apprunner wait associate-custom-domain  --service-arn $SERVICE_ARN  --domain-name de-recipe-generator.com
+
+    # - name: Update Route 53 Record
+    #   run: |
+    #     aws route53 change-resource-record-sets --hosted-zone-id Z07107629D9IQB919IBH --change-batch '{
+    #       "Changes": [{
+    #         "Action": "UPSERT",
+    #         "ResourceRecordSet": {
+    #           "Name": "de-recipe-generator.com",
+    #           "Type": "A",
+    #           "AliasTarget": {
+    #             "HostedZoneId": "Z01915732ZBZKC8W32UF0",
+    #             "DNSName": 'Stacks[0].Outputs[?OutputKey==`ServiceArn`].OutputValue',
+    #             "EvaluateTargetHealth": true
