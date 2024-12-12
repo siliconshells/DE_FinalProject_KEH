@@ -76,14 +76,12 @@ Resources:
         - Key: Environment
           Value: Production
   
-  CustomDomainStack:
-    Type: AWS::CloudFormation::Stack
-    DependsOn: AppRunnerService
+  CustomDomain:
+    Type: AWS::AppRunner::CustomDomain
     Properties:
-      TemplateURL: custom-domain.yaml  # Create this template separately
-      Parameters:
-        ServiceArn: !GetAtt AppRunnerService.ServiceArn
-        DomainName: de-recipe-generator.com
+      DomainName: de-recipe-generator.com
+      ServiceArn: !GetAtt AppRunnerService.ServiceArn
+      EnableWWWSubdomain: true
         
   AppRunnerAutoScalingConfiguration:
     Type: AWS::AppRunner::AutoScalingConfiguration
@@ -97,3 +95,9 @@ Outputs:
   ServiceUrl:
     Description: URL of the App Runner service
     Value: !GetAtt AppRunnerService.ServiceUrl
+  ServiceArn:
+    Description: ARN of the App Runner service
+    Value: !GetAtt AppRunnerService.ServiceArn
+  CustomDomainUrl:
+    Description: Custom domain URL
+    Value: !Sub https://${CustomDomain.DomainName}
