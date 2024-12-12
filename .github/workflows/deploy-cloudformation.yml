@@ -19,6 +19,23 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    - name: List and Delete All App Runner Services
+      run: |
+        # List all App Runner services
+        echo "Fetching all App Runner services..."
+        SERVICES=$(aws apprunner list-services --query "ServiceSummaryList[*].ServiceArn" --output text)
+
+        if [ -z "$SERVICES" ]; then
+          echo "No App Runner services found."
+        else
+          echo "Deleting App Runner services..."
+          for SERVICE_ARN in $SERVICES; do
+            echo "Deleting service: $SERVICE_ARN"
+            aws apprunner delete-service --service-arn $SERVICE_ARN
+          done
+          echo "All App Runner services deleted."
+        fi
+        
     - name: Delete existing stack
       run: |
         aws cloudformation delete-stack --stack-name my-flask-app-stack
