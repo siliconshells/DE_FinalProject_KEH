@@ -21,7 +21,7 @@ jobs:
 
     - name: Delete existing stack
       run: |
-        aws cloudformation delete-stack --stack-name my-flask-app-stack FORCE_DELETE_STACK
+        aws cloudformation delete-stack --stack-name my-flask-app-stack
         aws cloudformation wait stack-delete-complete --stack-name my-flask-app-stack
 
     - name: Deploy CloudFormation stack
