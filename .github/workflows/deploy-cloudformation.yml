@@ -31,25 +31,31 @@ jobs:
         template: app-runner-stack.yaml
         parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
 
-    - name: Display the new URL
+    - name: Update README with URL
       run: |
-        SERVICE_ARN=$(aws cloudformation describe-stacks  --stack-name my-flask-app-stack  --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)        
-    #    SERVICE_ARN=$(aws cloudformation describe-stacks  --stack-name my-flask-app-stack  --query 'Stacks[0].Outputs[?OutputKey==`ServiceArn`].OutputValue' --output text)        
-    #    aws apprunner associate-custom-domain  --service-arn $SERVICE_ARN  --domain-name de-recipe-generator.com --enable-www-subdomain
-
-    # - name: Wait for domain association
-    #   run: |
-    #     aws apprunner wait associate-custom-domain  --service-arn $SERVICE_ARN  --domain-name de-recipe-generator.com
-
-    # - name: Update Route 53 Record
-    #   run: |
-    #     aws route53 change-resource-record-sets --hosted-zone-id Z07107629D9IQB919IBH --change-batch '{
-    #       "Changes": [{
-    #         "Action": "UPSERT",
-    #         "ResourceRecordSet": {
-    #           "Name": "de-recipe-generator.com",
-    #           "Type": "A",
-    #           "AliasTarget": {
-    #             "HostedZoneId": "Z01915732ZBZKC8W32UF0",
-    #             "DNSName": 'Stacks[0].Outputs[?OutputKey==`ServiceArn`].OutputValue',
-    #             "EvaluateTargetHealth": true
+        SERVICE_URL=$(aws cloudformation describe-stacks \
+          --stack-name my-flask-app-stack \
+          --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' \
+          --output text)
+        
+        # Update or add the URL section
+        if grep -q "## Deployment URL" README.md; then
+          # Update existing URL
+          sed -i "/## Deployment URL/,/^$/c\## Deployment URL\n- App Runner URL: $SERVICE_URL\n\nLast deployed: $(date '+%Y-%m-%d %H:%M:%S UTC')\n" README.md
+        else
+          # Add new URL section at the top (after the first heading)
+          sed -i "1{p;s/.*//;a\## Deployment URL\n- App Runner URL: $SERVICE_URL\n\nLast deployed: $(date '+%Y-%m-%d %H:%M:%S UTC')\n" -e "}" README.md
+        fi
+        
+        # Configure Git
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        
+        # Check if there are changes to commit
+        if git diff --quiet README.md; then
+          echo "No changes to README.md"
+        else
+          git add README.md
+          git commit -m "Update deployment URL [skip ci]"
+          git push
+        fi
