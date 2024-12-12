@@ -45,8 +45,9 @@ def recipe_details(key, id):
     print(id)
 
     data = get_ingredients(key)
+ 
     if data:
-        data = data.json()
+       
         recipes = [
             {
                 "label": hit.get("recipe", {}).get("label"),
@@ -59,11 +60,19 @@ def recipe_details(key, id):
             }
             for hit in data.get("recipes", {}).get("hits", [])
         ]
+        llm_response = [
+            {
+                "text": text.get("text", {}),
+            }
+            for text in data.get("ingredient_histories", {}).get("content", [])
+        ]
+
+        print(llm_response, "this is the llm response")
 
         recipe = recipes[int(id) - 1]
-        print(recipe)
+        # print(recipe)
 
-        return render_template("history_and_details.html", recipe=recipe)
+        return render_template("history_and_details.html", recipe=recipe, llm_response=llm_response)
     else:
         data = {"results": []}
         print("-----NO RESPONSE FROM API-----")

@@ -1,3 +1,4 @@
+import os
 import requests
 import psycopg2
 import json
@@ -20,8 +21,8 @@ def get_secrets():
 
     # Create a Secrets Manager client
     client = boto3.client(
-        aws_access_key_id="AKIASU566WIB643O4OL3",
-        aws_secret_access_key="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",
+        aws_access_key_id="", # add env
+        aws_secret_access_key="", # add env
         service_name="secretsmanager",
         region_name="us-east-1",
     )
@@ -143,8 +144,9 @@ def get_ingredients(ingredients):
 
         # Query Bedrock for ingredient histories
         ingredient_histories = prompt(
-            f"Please return a short history of the following ingredients: {ingredients}"
+            f"Please return a short history of the following ingredients, complete the response within 200 tokens: {ingredients}"
         )
+        print(ingredient_histories)
 
         # Search for recipes using Edamam API
         recipes = search_recipes(ingredients)

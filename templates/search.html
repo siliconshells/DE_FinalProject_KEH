@@ -32,6 +32,7 @@ this page will also have a button to direct users to the "admin" stats dashboard
         .add-button {
             background-color: var(--primary-color);
             color: white;
+            margin-left: 20px;
         }
 
         .summary-button {
@@ -83,26 +84,45 @@ this page will also have a button to direct users to the "admin" stats dashboard
             border: 1px solid #ddd;
             background-color: #f9f9f9;
             border-radius: 5px;
+            position: relative;
+        }
+        h3 {
+            margin: 0;
+            padding: 0;
         }
 
         .ingredient-tag {
             display: inline-block;
             background-color: var(--accent-color);
             color: var(--text-color);
-            padding: 5px 10px;
+            padding: 10px 10px;
             margin: 2px;
             border-radius: 15px;
             font-size: 0.9rem;
-            z-index: 0;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .ingredient-tag:hover {
+            background-color:#b9802b ;
+            color: white;
+        }
+        #tags {
+            padding: 0;
         }
 
         #tags li {
             display: inline-block;
+            
         }
         .clk-rem {
             font-style: italic;
             font-weight: 300;
-            font-size: 20px;
+            font-size: 15px;
+            position: absolute;
+            top: 36px;
+            left: 6px;
         }
     </style>
 </head>
@@ -174,7 +194,7 @@ this page will also have a button to direct users to the "admin" stats dashboard
                 li.textContent = item;
                 li.addEventListener('click', () => {
                     addTag(item);
-                    dropdown.innerHTML = ''; // Clear the dropdown
+                    // dropdown.innerHTML = ''; 
                     searchInput.value = ''; // Clear search input
                 });
                 dropdown.appendChild(li);

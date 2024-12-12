@@ -25,12 +25,9 @@
         .back-button {
             background-color: #4CAF50;
             color: white;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
+            position: fixed;
+            top: 3%;
+            right: 3%;
         }
         .details-button {
             background-color: #008CBA;
@@ -41,11 +38,43 @@
             display: inline-block;
             margin-top: 10px;
         }
+
+        .results-container {
+            width: 100dvw;
+            overflow-x: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .result {
+            width: 290px;
+            height: 380px;
+            margin: 10px;
+            padding: 2px 5px 10px 5px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .result:hover {
+            border-color: #4CAF50;
+        }
+        .result h3 {
+            margin-top: 0;
+            font-size: 22px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1>Search Results for {{ query }}</h1>
+
     {% if recipes %}
+    <div class="results-container">
         {% for recipe in recipes %}
             <div class="result">
                 <h3>{{ recipe.label }}</h3>
@@ -56,7 +85,9 @@
                 <br>
                 <a href="/recipes/{{ query }}/{{ loop.index}}" class="details-button">View Details</a>
             </div>
-        {% endfor %}
+        {% endfor %}        
+    </div>
+
     {% else %}
         <p>No results found. Try a different query.</p>
     {% endif %}
