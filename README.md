@@ -1,4 +1,4 @@
-# IDS 706 Final Project: Recipe Generator
+# IDS 706 Final Project: Recipe Generator 🛒🍎🧀🥦🥖
 Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu  
 [Demo Video](https://www.youtube.com/)  
 
