@@ -7,7 +7,7 @@ Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu
 Our project is a recipe suggestion tool designed to help users make the most of the ingredients they already have in their kitchen.  Users can select ingredients they may have in their kitchen and our tool will suggest recipes to them that they could make with said ingredients. Our tool provides recipe details, as well as recipe history, giving the user not only the instructions to make a meal without having to run to the grocery store, but also fun facts about the meal to share around the dinner table. In addition to these search features, our tool includes summary search analytics, showcasing summary statistics of searches made by all users. 
 
 ## Architecture
-![architecture program](images/de_final_diagram.jpg)  
+![architecture_program](images/de_final_diagram.jpg)  
 
 ## Requirements
 - Microservice
