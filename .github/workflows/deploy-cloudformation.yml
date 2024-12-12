@@ -31,31 +31,16 @@ jobs:
         template: app-runner-stack.yaml
         parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
 
-    - name: Update README with URL
+    - name: Get Service URL
       run: |
-        SERVICE_URL=$(aws cloudformation describe-stacks \
-          --stack-name my-flask-app-stack \
-          --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' \
-          --output text)
+        SERVICE_URL=$(aws cloudformation describe-stacks --stack-name my-flask-app-stack --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)
         
-        # Update or add the URL section
-        if grep -q "## Deployment URL" README.md; then
-          # Update existing URL
-          sed -i "/## Deployment URL/,/^$/c\## Deployment URL\n- App Runner URL: $SERVICE_URL\n\nLast deployed: $(date '+%Y-%m-%d %H:%M:%S UTC')\n" README.md
-        else
-          # Add new URL section at the top (after the first heading)
-          sed -i "1{p;s/.*//;a\## Deployment URL\n- App Runner URL: $SERVICE_URL\n\nLast deployed: $(date '+%Y-%m-%d %H:%M:%S UTC')\n" -e "}" README.md
-        fi
+        echo "App Runner Service URL: $SERVICE_URL"
         
-        # Configure Git
-        git config --global user.name 'GitHub Actions'
-        git config --global user.email 'actions@github.com'
+        # If you want to set this as an output variable in GitHub Actions
+        echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
         
-        # Check if there are changes to commit
-        if git diff --quiet README.md; then
-          echo "No changes to README.md"
-        else
-          git add README.md
-          git commit -m "Update deployment URL [skip ci]"
-          git push
-        fi
+        # Create a markdown summary
+        echo "## Deployment URL" >> $GITHUB_STEP_SUMMARY
+        echo "✨ **App Runner URL:** $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
+  
