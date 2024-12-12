@@ -40,3 +40,12 @@ footer {
 h1, p {
     margin: 20px;
 }
+
+button, a {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover, a:hover {
+    background-color: #458848;
+}

@@ -15,15 +15,21 @@ just kidding this may also need to be the recipe details page (text me if u have
         .container {
             display: grid;
             grid-template-columns: 1.5fr 0.5fr;
+            margin: 0 20px;
         }
         .recipe-details-container {
-            outline: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        h4 {
+
+        }
         .history-container {
-            outline: auto;
+            /* outline: auto; */
+            padding-left: 20px;
+            background-color: rgba(255, 255, 255, 0.61);
+            
         }
         .summary-button {
             background-color: #4CAF50;
@@ -38,6 +44,11 @@ just kidding this may also need to be the recipe details page (text me if u have
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 5px;
+        }
+        .recipe-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
     </style>
@@ -54,9 +65,11 @@ just kidding this may also need to be the recipe details page (text me if u have
 
     <main class="container">
         <div class="recipe-details-container" >
-            <h2>{{recipe.label}}</h2>
-            <h4>Calories: {{(recipe.calories)}}</h4>
-            <p><strong>Source:</strong> {{recipe.source}}</p>
+            <div class="recipe-header">
+                <h2>{{recipe.label}}</h2>
+                <p><strong>Calories:</strong> {{(recipe.calories)}}</h4>
+                <p><strong>Source:</strong> {{recipe.source}}</p>
+            </div>
             {% if recipe.image %}
                 <img src="{{ recipe.image }}"  alt="Cover Image" style="max-height: 400px; max-width: 400px; object-fit: cover;">
             {% endif %}
@@ -75,6 +88,11 @@ just kidding this may also need to be the recipe details page (text me if u have
         </div>
         <div class="history-container">
             <h3>History</h3>
+            {% if llm_response %}
+                {% for item in llm_response %}
+                    <p>{{item.text}}</p>
+                {% endfor %}
+            {% endif%}
         </div>
     </main>
 
