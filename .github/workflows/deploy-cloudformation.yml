@@ -31,11 +31,12 @@ jobs:
           echo "Deleting App Runner services..."
           for SERVICE_ARN in $SERVICES; do
             echo "Deleting service: $SERVICE_ARN"
+            aws apprunner pause-service --service-arn $SERVICE_ARN
             aws apprunner delete-service --service-arn $SERVICE_ARN
           done
           echo "All App Runner services deleted."
         fi
-        
+
     - name: Delete existing stack
       run: |
         aws cloudformation delete-stack --stack-name my-flask-app-stack
