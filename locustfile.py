@@ -2,11 +2,23 @@ from locust import HttpUser, task, between
 
 
 class WebsiteUser(HttpUser):
-    wait_time = between(1, 3)  # Each user will wait 1 to 3 seconds between requests
+    wait_time = between(1, 3)  # Users will wait 1 to 3 seconds between requests
 
     @task
     def load_homepage(self):
-        self.client.get("/")  # Put our URL here
+        self.client.get("/")  # Test the home page
+
+    @task
+    def load_dash(self):
+        self.client.get("/dash")  # Test the dash page
+
+    @task
+    def load_search(self):
+        self.client.get("/search")  # Test the search page
+
+    @task
+    def load_history(self):
+        self.client.get("/history_and_details")  # Test history and details page
 
 
 # ----------------------------------------
