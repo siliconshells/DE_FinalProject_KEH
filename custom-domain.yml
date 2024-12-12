@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Custom domain configuration for App Runner'
+
+Parameters:
+  ServiceArn:
+    Type: String
+    Description: ARN of the App Runner service
+  DomainName:
+    Type: String
+    Description: Custom domain name
+
+Resources:
+  CustomDomain:
+    Type: AWS::AppRunner::CustomDomain
+    Properties:
+      DomainName: !Ref DomainName
+      ServiceArn: !Ref ServiceArn
+      EnableWWWSubdomain: true
+
+Outputs:
+  CustomDomainName:
+    Description: Custom domain name
+    Value: !Ref DomainName
