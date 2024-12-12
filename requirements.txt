@@ -8,3 +8,5 @@ python-dotenv == 1.0.1
 boto3 == 1.35.78
 pytest==7.4.0
 locust #Setting versions don't work
+pytest
+flask
