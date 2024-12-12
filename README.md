@@ -18,11 +18,11 @@ Our project is a recipe suggestion tool designed to help users make the most of 
 Load testing of our application was conducted using the ```Locust``` package. We were interested in seeing the performance of our tool under varying levels of user demand, with specific interest in the ability to handle 10,000 requests per second. Our testing yielded the following results:  
 
 **Performance Charts:**
-![loadtestgraph](images/locust_load_testing.png)
+![loadtestgraph](images/locust_charts.png)
 **Performance Statistics:**
-![loadtestgraph](images/locust_load_test_stats.png)
+![loadtestgraph](images/locust_statistics.png)
 
-Our team believes the short 
+Our team believes the shortcomings in the load handling of our application stem from it interfacing with two APIs as well as a database. In addition, due to financial constraints, we are using the free tier versions of Amazon Bedrock and RDS, and lowest paid tier of the Edamam API. If our team was to invest in higher tier versions of these services, speed would improve drastically. The high amount of failures seen is likely due to timeouts caused by the Edamam API, which at our price tier throttles calls to 10 calls per minute.  
 
 ## How to Run This Project
 
