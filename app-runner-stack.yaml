@@ -75,13 +75,6 @@ Resources:
       Tags:
         - Key: Environment
           Value: Production
-  
-  CustomDomain:
-    Type: AWS::AppRunner::CustomDomain
-    Properties:
-      DomainName: de-recipe-generator.com
-      ServiceArn: !GetAtt AppRunnerService.ServiceArn
-      EnableWWWSubdomain: true
         
   AppRunnerAutoScalingConfiguration:
     Type: AWS::AppRunner::AutoScalingConfiguration
@@ -98,6 +91,3 @@ Outputs:
   ServiceArn:
     Description: ARN of the App Runner service
     Value: !GetAtt AppRunnerService.ServiceArn
-  CustomDomainUrl:
-    Description: Custom domain URL
-    Value: !Sub https://${CustomDomain.DomainName}
