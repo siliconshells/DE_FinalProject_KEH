@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
-import requests
-from back_end import *
+from back_end import get_ingredients, report
 
 app = Flask(__name__)
 
@@ -45,15 +44,14 @@ def recipe_details(key, id):
     print(id)
 
     data = get_ingredients(key)
- 
+
     if data:
-       
+
         recipes = [
             {
                 "label": hit.get("recipe", {}).get("label"),
                 "ingredientLines": hit.get("recipe", {}).get("ingredientLines", []),
                 "image": hit.get("recipe", {}).get("image"),
-                "url": hit.get("recipe", {}).get("url"),
                 "source": hit.get("recipe", {}).get("source"),
                 "calories": int(hit.get("recipe", {}).get("calories")),
                 "url": hit.get("recipe", {}).get("url"),
@@ -72,7 +70,9 @@ def recipe_details(key, id):
         recipe = recipes[int(id) - 1]
         # print(recipe)
 
-        return render_template("history_and_details.html", recipe=recipe, llm_response=llm_response)
+        return render_template(
+            "history_and_details.html", recipe=recipe, llm_response=llm_response
+        )
     else:
         data = {"results": []}
         print("-----NO RESPONSE FROM API-----")

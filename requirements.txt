@@ -1,12 +1,9 @@
-# black==22.3.0
-# pytest==7.4.0
-# pylint==2.15.3
+black==22.3.0
+pylint==2.15.3
+ruff==0.6.5
 Flask-Cors == 5.0.0
 flask == 3.0.3
 psycopg2-binary == 2.9.10
 python-dotenv == 1.0.1
 boto3 == 1.35.78
-locust
-numpy
-pandas
-uvicorn
+locust == 2.32.4

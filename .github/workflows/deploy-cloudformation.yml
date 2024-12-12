@@ -19,6 +19,11 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    - name: Delete existing stack
+      run: |
+        aws cloudformation delete-stack --stack-name my-flask-app-stack
+        aws cloudformation wait stack-delete-complete --stack-name my-flask-app-stack
+
     - name: Deploy CloudFormation stack
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
