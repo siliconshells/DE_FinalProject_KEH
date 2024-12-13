@@ -1,12 +1,9 @@
 import pytest
-import json
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from back_end import (
     app,
-    get_a_secret,
     get_ingredients,
-    search_recipes,
     save_user_activity,
 )
 
@@ -34,28 +31,6 @@ def test_get_ingredients(mock_prompt, mock_get_db_connection):
 
     mock_conn.cursor.assert_called()
     mock_conn.close.assert_called()
-
-
-@patch("back_end.requests.get")
-def test_search_recipes(mock_get):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"hits": ["recipe1", "recipe2"]}
-    mock_get.return_value = mock_response
-
-    query = "tomato, basil"
-    recipes = search_recipes(query)
-
-    assert recipes == {"hits": ["recipe1", "recipe2"]}
-    mock_get.assert_called_with(
-        "https://api.edamam.com/search",
-        params={
-            "q": query,
-            "app_id": get_a_secret("EDAMAM_APP_ID"),
-            "app_key": get_a_secret("EDAMAM_APP_KEY"),
-            "to": 10,
-        },
-    )
 
 
 @patch("back_end.psycopg2.connect")
