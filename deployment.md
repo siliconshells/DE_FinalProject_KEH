@@ -8,6 +8,7 @@ Deployment Instructions:
     - RDS with Postgres
 	- Install Docker locally
 
+
 2. Clone Repository:
 git clone <repository_url>
 cd <local_repository_directory>
@@ -19,4 +20,9 @@ cd <local_repository_directory>
 4. Automatic deployment via Cloud Formation:
 
 5. Get the URL
+
+6. To redeploy
+    1. Delete App Runner in the console first
+    1. Delete Stack in the console second
+    1. Just push a change or execute an existing Github Action
 
