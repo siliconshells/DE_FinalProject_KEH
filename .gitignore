@@ -3,3 +3,4 @@ Misc
 Front_End_Work
 .ruff_cache
 .pytest_cache
+__pycache__
