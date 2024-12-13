@@ -1,8 +1,7 @@
-import os
 import requests
 import psycopg2
 import json
-from flask import Flask, request, render_template
+from flask import Flask
 from datetime import datetime
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -21,8 +20,8 @@ def get_secrets():
 
     # Create a Secrets Manager client
     client = boto3.client(
-        aws_access_key_id="",  # add env
-        aws_secret_access_key="",  # add env
+        aws_access_key_id="AKIASU566WIB643O4OL3",
+        aws_secret_access_key="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",
         service_name="secretsmanager",
         region_name="us-east-1",
     )

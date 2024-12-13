@@ -19,9 +19,30 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Deploy CloudFormation stack
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
-      with:
-        name: my-flask-app-stack
-        template: app-runner-stack.yaml
-        parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
+    - name: Check and Deploy Stack
+      run: |
+        STACK_NAME="my-flask-app-stack"
+        
+        # Check if stack exists
+        if ! aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null; then
+          echo "Stack does not exist. Creating new stack..."
+          aws cloudformation deploy --template-file app-runner-stack.yaml --stack-name $STACK_NAME --parameter-overrides "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}" --capabilities CAPABILITY_IAM
+        fi
+
+    - name: Get the PUBLIC URL for the Flask Microservice
+      run: |
+        STACK_NAME="my-flask-app-stack"
+
+        # Wait for stack operation to complete
+        echo "Waiting for stack operation to complete..."
+        aws cloudformation wait stack-create-complete --stack-name $STACK_NAME || aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+        
+        # Get and display the service URL
+        SERVICE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)
+        
+        echo "App Runner Service URL: $SERVICE_URL"
+        echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+        
+        # Create markdown summary
+        echo "## Deployment URLs" >> $GITHUB_STEP_SUMMARY
+        echo "✨ **App Runner URL:** $SERVICE_URL" >> $GITHUB_STEP_SUMMARY

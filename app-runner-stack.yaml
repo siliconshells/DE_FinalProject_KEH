@@ -38,7 +38,7 @@ Resources:
 
   AppRunnerService:
     Type: AWS::AppRunner::Service
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     Properties:
       ServiceName: my-flask-app
       SourceConfiguration:
@@ -75,7 +75,7 @@ Resources:
       Tags:
         - Key: Environment
           Value: Production
-
+        
   AppRunnerAutoScalingConfiguration:
     Type: AWS::AppRunner::AutoScalingConfiguration
     Properties:
@@ -88,3 +88,6 @@ Outputs:
   ServiceUrl:
     Description: URL of the App Runner service
     Value: !GetAtt AppRunnerService.ServiceUrl
+  ServiceArn:
+    Description: ARN of the App Runner service
+    Value: !GetAtt AppRunnerService.ServiceArn
