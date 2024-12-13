@@ -32,7 +32,7 @@ jobs:
           for SERVICE_ARN in $SERVICES; do
             echo "Deleting service: $SERVICE_ARN"
             aws apprunner pause-service --service-arn $SERVICE_ARN
-            sleep 15
+            sleep 30
             aws apprunner delete-service --service-arn $SERVICE_ARN
           done
           echo "All App Runner services deleted."
