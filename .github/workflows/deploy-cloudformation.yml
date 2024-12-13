@@ -27,7 +27,6 @@ jobs:
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null; then
           echo "Stack does not exist. Creating new stack..."
           aws cloudformation deploy --template-file app-runner-stack.yaml --stack-name $STACK_NAME --parameter-overrides "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}" --capabilities CAPABILITY_IAM
-
         
         # Wait for stack operation to complete
         echo "Waiting for stack operation to complete..."
@@ -42,25 +41,3 @@ jobs:
         # Create markdown summary
         echo "## Deployment URLs" >> $GITHUB_STEP_SUMMARY
         echo "✨ **App Runner URL:** $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
-
-
-    # - name: Deploy CloudFormation stack
-    #   uses: aws-actions/aws-cloudformation-github-deploy@v1
-    #   with:
-    #     name: my-flask-app-stack
-    #     template: app-runner-stack.yaml
-    #     parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
-
-    # - name: Get Service URL
-    #   run: |
-    #     SERVICE_URL=$(aws cloudformation describe-stacks --stack-name my-flask-app-stack --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)
-        
-    #     echo "App Runner Service URL: $SERVICE_URL"
-        
-    #     # If you want to set this as an output variable in GitHub Actions
-    #     echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
-        
-    #     # Create a markdown summary
-    #     echo "## Deployment URL" >> $GITHUB_STEP_SUMMARY
-    #     echo "✨ **App Runner URL:** $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
-  
