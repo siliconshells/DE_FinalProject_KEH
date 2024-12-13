@@ -25,7 +25,7 @@ def test_get_ingredients(mock_prompt, mock_get_db_connection):
 
     ingredients = "tomato, basil"
     back_end.testing = True
-    result = back_end.get_ingredients(ingredients)
+    result = back_end.get_ingredients(ingredients, testing=True)
 
     assert "ingredient_histories" in result
     assert result["ingredient_histories"] == "Short history of ingredients."
@@ -43,8 +43,7 @@ def test_search_recipes(mock_get):
     mock_get.return_value = mock_response
 
     query = "tomato, basil"
-    back_end.testing = True
-    recipes = back_end.search_recipes(query)
+    recipes = back_end.search_recipes(query, True)
 
     assert recipes == {"hits": ["recipe1", "recipe2"]}
     mock_get.assert_called_with(
@@ -65,7 +64,6 @@ def test_save_user_activity(mock_connect):
     mock_conn.cursor.return_value = mock_cursor
     mock_connect.return_value = mock_conn
 
-    back_end.testing = True
     back_end.save_user_activity(mock_conn, datetime.now(), "tomato, basil", "test_user")
 
     mock_cursor.execute.assert_called()
@@ -89,3 +87,10 @@ def test_report(mock_get_db_connection, client):
     assert response.status_code == 200
     mock_cursor.execute.assert_called()
     mock_conn.close.assert_called()
+
+
+if __name__ == "__main__":
+    test_report(client)
+    test_save_user_activity()
+    test_search_recipes()
+    test_get_ingredients()

@@ -15,7 +15,6 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 secrets = None
-testing = False
 
 
 def get_secrets():
@@ -38,8 +37,8 @@ def get_secrets():
     return get_secret_value_response
 
 
-def get_a_secret(secret):
-    global testing
+def get_a_secret(secret, testing=False):
+    print(testing)
     if testing:
         return os.getenv(secret)
 
@@ -51,38 +50,23 @@ def get_a_secret(secret):
 
 
 # Edamam credentials
-EDAMAM_APP_ID = get_a_secret("EDAMAM_APP_ID")
-EDAMAM_APP_KEY = get_a_secret("EDAMAM_APP_KEY")
-EDAMAM_API_URL = get_a_secret("EDAMAM_API_URL")
+# EDAMAM_APP_ID = get_a_secret("EDAMAM_APP_ID")
+# EDAMAM_APP_KEY = get_a_secret("EDAMAM_APP_KEY")
+# EDAMAM_API_URL = get_a_secret("EDAMAM_API_URL")
 
-# PostgreSQL connection details
-DB_CONFIG = {
-    "host": get_a_secret("DB_HOST"),
-    "user": get_a_secret("DB_USER"),
-    "password": get_a_secret("DB_PASSWORD"),
-    "port": 5432,
-}
 
 # Amazon LLM Connection Credientials
 # We used Jenny's account for Bedrock hence different key
-AWS_ACCESS_KEY_ID = (
-    get_a_secret("BEDROCK_AWS_ACCESS_KEY_ID")
-    if testing
-    else get_a_secret("AWS_ACCESS_KEY_ID")
-)
-AWS_SECRET_ACCESS_KEY = (
-    get_a_secret("BEDROCK_AWS_SECRET_ACCESS_KEY")
-    if testing
-    else get_a_secret("AWS_SECRET_ACCESS_KEY")
-)
-BEDROCK_MODEL_ID = get_a_secret("BEDROCK_MODEL_ID")
+# AWS_ACCESS_KEY_ID =
+# AWS_SECRET_ACCESS_KEY =
+# BEDROCK_MODEL_ID = get_a_secret("BEDROCK_MODEL_ID")
 
-client = boto3.client(
-    aws_access_key_id=get_a_secret("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=get_a_secret("AWS_SECRET_ACCESS_KEY"),
-    service_name="bedrock-runtime",
-    region_name="us-west-2",
-)
+# client = boto3.client(
+#     aws_access_key_id=get_a_secret("BEDROCK_AWS_ACCESS_KEY_ID"),
+#     aws_secret_access_key=get_a_secret("BEDROCK_AWS_SECRET_ACCESS_KEY"),
+#     service_name="bedrock-runtime",
+#     region_name="us-west-2",
+# )
 
 
 def prompt(llm_input):
@@ -107,6 +91,12 @@ def prompt(llm_input):
     }
 
     try:
+        client = boto3.client(
+            aws_access_key_id=get_a_secret("BEDROCK_AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=get_a_secret("BEDROCK_AWS_SECRET_ACCESS_KEY"),
+            service_name="bedrock-runtime",
+            region_name="us-west-2",
+        )
         response = client.invoke_model(**native_request)
         model_response = json.loads(response["body"].read())
         return model_response
@@ -115,8 +105,15 @@ def prompt(llm_input):
 
 
 # Establish database connection
-def get_db_connection():
+def get_db_connection(testing=False):
     try:
+        # PostgreSQL connection details
+        DB_CONFIG = {
+            "host": get_a_secret("DB_HOST", testing),
+            "user": get_a_secret("DB_USER", testing),
+            "password": get_a_secret("DB_PASSWORD", testing),
+            "port": 5432,
+        }
         conn = psycopg2.connect(**DB_CONFIG)
         return conn
     except Exception as e:
@@ -142,7 +139,7 @@ def save_user_activity(conn, activity_time, ingredients, username):
         cursor.close()
 
 
-def get_ingredients(ingredients):
+def get_ingredients(ingredients, testing):
     if ingredients:
         conn = get_db_connection(testing)
         if conn:
@@ -161,21 +158,21 @@ def get_ingredients(ingredients):
         print(ingredient_histories)
 
         # Search for recipes using Edamam API
-        recipes = search_recipes(ingredients)
+        recipes = search_recipes(ingredients, testing)
 
         # Combine and return results
         return {"ingredient_histories": ingredient_histories, "recipes": recipes}
 
 
-def search_recipes(query):
+def search_recipes(query, testing=False):
     """Searches recipes from the Edamam API."""
     params = {
         "q": query,
-        "app_id": EDAMAM_APP_ID,
-        "app_key": EDAMAM_APP_KEY,
+        "app_id": get_a_secret("EDAMAM_APP_ID", testing),
+        "app_key": get_a_secret("EDAMAM_APP_KEY", testing),
         "to": 10,  # Limit results to 10
     }
-    response = requests.get(EDAMAM_API_URL, params=params)
+    response = requests.get(get_a_secret("EDAMAM_API_URL", testing), params=params)
     if response.status_code == 200:
         data = response.json()
         return data
