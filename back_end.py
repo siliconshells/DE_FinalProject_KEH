@@ -8,7 +8,6 @@ from flask_cors import CORS
 import boto3
 from botocore.exceptions import ClientError
 import os
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -139,7 +138,7 @@ def save_user_activity(conn, activity_time, ingredients, username):
         cursor.close()
 
 
-def get_ingredients(ingredients, testing):
+def get_ingredients(ingredients, testing=False):
     if ingredients:
         conn = get_db_connection(testing)
         if conn:
