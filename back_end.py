@@ -20,9 +20,7 @@ def get_secrets():
 
     # Create a Secrets Manager client
     client = boto3.client(
-        aws_access_key_id="AKIASU566WIB643O4OL3",
-        aws_secret_access_key="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",
-        service_name="secretsmanager",
+        "secretsmanager",
         region_name="us-east-1",
     )
 
