@@ -19,47 +19,51 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: List and Delete All App Runner Services
+    - name: Check and Deploy Stack
       run: |
-        # List all App Runner services
-        echo "Fetching all App Runner services..."
-        SERVICES=$(aws apprunner list-services --query "ServiceSummaryList[*].ServiceArn" --output text)
-
-        if [ -z "$SERVICES" ]; then
-          echo "No App Runner services found."
+        STACK_NAME="my-flask-app-stack"
+        
+        # Check if stack exists
+        if ! aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null; then
+          echo "Stack does not exist. Creating new stack..."
+          aws cloudformation deploy --template-file app-runner-stack.yaml --stack-name $STACK_NAME --parameter-overrides "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}" --capabilities CAPABILITY_IAM
         else
-          echo "Deleting App Runner services..."
-          for SERVICE_ARN in $SERVICES; do
-            echo "Deleting service: $SERVICE_ARN"
-            aws apprunner pause-service --service-arn $SERVICE_ARN
-            sleep 30
-            aws apprunner delete-service --service-arn $SERVICE_ARN
-          done
-          echo "All App Runner services deleted."
+          echo "Stack already exists. Updating stack..."
+          aws cloudformation deploy --template-file app-runner-stack.yaml --stack-name $STACK_NAME --parameter-overrides "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}" --capabilities CAPABILITY_IAM
         fi
-
-    - name: Delete existing stack
-      run: |
-        aws cloudformation wait delete-stack --stack-name my-flask-app-stack
-        aws cloudformation wait stack-delete-complete --stack-name my-flask-app-stack
-
-    - name: Deploy CloudFormation stack
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
-      with:
-        name: my-flask-app-stack
-        template: app-runner-stack.yaml
-        parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
-
-    - name: Get Service URL
-      run: |
-        SERVICE_URL=$(aws cloudformation describe-stacks --stack-name my-flask-app-stack --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)
+        
+        # Wait for stack operation to complete
+        echo "Waiting for stack operation to complete..."
+        aws cloudformation wait stack-create-complete --stack-name $STACK_NAME || aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+        
+        # Get and display the service URL
+        SERVICE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)
         
         echo "App Runner Service URL: $SERVICE_URL"
-        
-        # If you want to set this as an output variable in GitHub Actions
         echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
         
-        # Create a markdown summary
-        echo "## Deployment URL" >> $GITHUB_STEP_SUMMARY
+        # Create markdown summary
+        echo "## Deployment URLs" >> $GITHUB_STEP_SUMMARY
         echo "✨ **App Runner URL:** $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
+
+
+    # - name: Deploy CloudFormation stack
+    #   uses: aws-actions/aws-cloudformation-github-deploy@v1
+    #   with:
+    #     name: my-flask-app-stack
+    #     template: app-runner-stack.yaml
+    #     parameter-overrides: "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}"
+
+    # - name: Get Service URL
+    #   run: |
+    #     SERVICE_URL=$(aws cloudformation describe-stacks --stack-name my-flask-app-stack --query 'Stacks[0].Outputs[?OutputKey==`ServiceUrl`].OutputValue' --output text)
+        
+    #     echo "App Runner Service URL: $SERVICE_URL"
+        
+    #     # If you want to set this as an output variable in GitHub Actions
+    #     echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+        
+    #     # Create a markdown summary
+    #     echo "## Deployment URL" >> $GITHUB_STEP_SUMMARY
+    #     echo "✨ **App Runner URL:** $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
   
