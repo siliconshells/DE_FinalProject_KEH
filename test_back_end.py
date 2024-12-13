@@ -34,6 +34,28 @@ def test_get_ingredients(mock_prompt, mock_get_db_connection):
     mock_conn.close.assert_called()
 
 
+@patch("back_end.requests.get")
+def test_search_recipes(mock_get):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"hits": ["recipe1", "recipe2"]}
+    mock_get.return_value = mock_response
+
+    query = "tomato, basil"
+    recipes = back_end.search_recipes(query, True)
+
+    assert recipes == {"hits": ["recipe1", "recipe2"]}
+    mock_get.assert_called_with(
+        "https://api.edamam.com/search",
+        params={
+            "q": query,
+            "app_id": os.getenv("EDAMAM_APP_ID"),
+            "app_key": os.getenv("EDAMAM_APP_KEY"),
+            "to": 10,
+        },
+    )
+
+
 @patch("back_end.psycopg2.connect")
 def test_save_user_activity(mock_connect):
     mock_conn = MagicMock()
@@ -70,3 +92,4 @@ if __name__ == "__main__":
     test_report(client)
     test_save_user_activity()
     test_get_ingredients()
+    test_search_recipes(client)

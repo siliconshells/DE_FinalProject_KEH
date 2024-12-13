@@ -150,7 +150,7 @@ def search_recipes(query, testing=False):
         "app_key": get_a_secret("EDAMAM_APP_KEY", testing),
         "to": 10,  # Limit results to 10
     }
-    response = requests.get(get_a_secret("EDAMAM_API_URL", testing), params=params)
+    response = requests.get("https://api.edamam.com/search", params=params)
     if response.status_code == 200:
         data = response.json()
         return data
