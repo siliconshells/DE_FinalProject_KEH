@@ -27,6 +27,7 @@ jobs:
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME 2>/dev/null; then
           echo "Stack does not exist. Creating new stack..."
           aws cloudformation deploy --template-file app-runner-stack.yaml --stack-name $STACK_NAME --parameter-overrides "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}" --capabilities CAPABILITY_IAM
+        fi
         
         # Wait for stack operation to complete
         echo "Waiting for stack operation to complete..."
