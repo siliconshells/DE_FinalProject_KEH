@@ -28,7 +28,9 @@ jobs:
           echo "Stack does not exist. Creating new stack..."
           aws cloudformation deploy --template-file app-runner-stack.yaml --stack-name $STACK_NAME --parameter-overrides "GitHubConnectionArn=${{ secrets.REPOSITORY_CONNECTION_ARN }}" --capabilities CAPABILITY_IAM
         fi
-        
+
+    - name: Get the PUBLIC URL for the Flask Microservice
+      run: |
         # Wait for stack operation to complete
         echo "Waiting for stack operation to complete..."
         aws cloudformation wait stack-create-complete --stack-name $STACK_NAME || aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
