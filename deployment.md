@@ -1,3 +1,9 @@
+---
+noteId: "21467960b90011ef9b4b3150dae35552"
+tags: []
+
+---
+
 Deployment Instructions:   
 1. Prerequisites:   
 	- Create an AWS Account   
