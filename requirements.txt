@@ -7,4 +7,5 @@ psycopg2-binary == 2.9.10
 python-dotenv == 1.0.1
 boto3 == 1.35.78
 pytest==7.4.0
+python-dotenv==1.0.1
 locust #Setting versions don't work

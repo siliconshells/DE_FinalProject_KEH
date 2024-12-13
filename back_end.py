@@ -7,13 +7,15 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import boto3
 from botocore.exceptions import ClientError
-
+import os
+from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 secrets = None
+testing = False
 
 
 def get_secrets():
@@ -37,6 +39,10 @@ def get_secrets():
 
 
 def get_a_secret(secret):
+    global testing
+    if testing:
+        return os.getenv(secret)
+
     global secrets
     if secrets is None:
         secrets = get_secrets()
@@ -58,8 +64,17 @@ DB_CONFIG = {
 }
 
 # Amazon LLM Connection Credientials
-AWS_ACCESS_KEY_ID = (get_a_secret("AWS_ACCESS_KEY_ID"),)
-AWS_SECRET_ACCESS_KEY = get_a_secret("AWS_SECRET_ACCESS_KEY")
+# We used Jenny's account for Bedrock hence different key
+AWS_ACCESS_KEY_ID = (
+    get_a_secret("BEDROCK_AWS_ACCESS_KEY_ID")
+    if testing
+    else get_a_secret("AWS_ACCESS_KEY_ID")
+)
+AWS_SECRET_ACCESS_KEY = (
+    get_a_secret("BEDROCK_AWS_SECRET_ACCESS_KEY")
+    if testing
+    else get_a_secret("AWS_SECRET_ACCESS_KEY")
+)
 BEDROCK_MODEL_ID = get_a_secret("BEDROCK_MODEL_ID")
 
 client = boto3.client(
@@ -129,7 +144,7 @@ def save_user_activity(conn, activity_time, ingredients, username):
 
 def get_ingredients(ingredients):
     if ingredients:
-        conn = get_db_connection()
+        conn = get_db_connection(testing)
         if conn:
             try:
                 # Save user activity to the database

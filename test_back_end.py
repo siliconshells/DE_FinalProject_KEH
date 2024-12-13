@@ -3,9 +3,17 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime
 from back_end import (
     app,
+    testing,
+    get_a_secret,
     get_ingredients,
+    search_recipes,
     save_user_activity,
 )
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @pytest.fixture
@@ -23,6 +31,7 @@ def test_get_ingredients(mock_prompt, mock_get_db_connection):
     mock_get_db_connection.return_value = mock_conn
 
     ingredients = "tomato, basil"
+    testing = True
     result = get_ingredients(ingredients)
 
     assert "ingredient_histories" in result
@@ -33,6 +42,29 @@ def test_get_ingredients(mock_prompt, mock_get_db_connection):
     mock_conn.close.assert_called()
 
 
+@patch("back_end.requests.get")
+def test_search_recipes(mock_get):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"hits": ["recipe1", "recipe2"]}
+    mock_get.return_value = mock_response
+
+    query = "tomato, basil"
+    testing = True
+    recipes = search_recipes(query)
+
+    assert recipes == {"hits": ["recipe1", "recipe2"]}
+    mock_get.assert_called_with(
+        "https://api.edamam.com/search",
+        params={
+            "q": query,
+            "app_id": os.getenv("EDAMAM_APP_ID"),
+            "app_key": os.getenv("EDAMAM_APP_KEY"),
+            "to": 10,
+        },
+    )
+
+
 @patch("back_end.psycopg2.connect")
 def test_save_user_activity(mock_connect):
     mock_conn = MagicMock()
@@ -40,6 +72,7 @@ def test_save_user_activity(mock_connect):
     mock_conn.cursor.return_value = mock_cursor
     mock_connect.return_value = mock_conn
 
+    testing = True
     save_user_activity(mock_conn, datetime.now(), "tomato, basil", "test_user")
 
     mock_cursor.execute.assert_called()
@@ -58,6 +91,7 @@ def test_report(mock_get_db_connection, client):
         ("2024-12-12 12:00:00", "test_ingredient", "test_user")
     ]
 
+    testing = True
     response = client.get("/report/busiest_day")
     assert response.status_code == 200
     mock_cursor.execute.assert_called()
