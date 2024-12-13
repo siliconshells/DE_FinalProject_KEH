@@ -31,6 +31,8 @@ jobs:
 
     - name: Get the PUBLIC URL for the Flask Microservice
       run: |
+        STACK_NAME="my-flask-app-stack"
+
         # Wait for stack operation to complete
         echo "Waiting for stack operation to complete..."
         aws cloudformation wait stack-create-complete --stack-name $STACK_NAME || aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
