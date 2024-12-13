@@ -37,7 +37,6 @@ def get_secrets():
 
 
 def get_a_secret(secret, testing=False):
-    print(testing)
     if testing:
         return os.getenv(secret)
 
@@ -46,26 +45,6 @@ def get_a_secret(secret, testing=False):
         secrets = get_secrets()
         secrets = json.loads(secrets["SecretString"])
     return secrets[secret]
-
-
-# Edamam credentials
-# EDAMAM_APP_ID = get_a_secret("EDAMAM_APP_ID")
-# EDAMAM_APP_KEY = get_a_secret("EDAMAM_APP_KEY")
-# EDAMAM_API_URL = get_a_secret("EDAMAM_API_URL")
-
-
-# Amazon LLM Connection Credientials
-# We used Jenny's account for Bedrock hence different key
-# AWS_ACCESS_KEY_ID =
-# AWS_SECRET_ACCESS_KEY =
-# BEDROCK_MODEL_ID = get_a_secret("BEDROCK_MODEL_ID")
-
-# client = boto3.client(
-#     aws_access_key_id=get_a_secret("BEDROCK_AWS_ACCESS_KEY_ID"),
-#     aws_secret_access_key=get_a_secret("BEDROCK_AWS_SECRET_ACCESS_KEY"),
-#     service_name="bedrock-runtime",
-#     region_name="us-west-2",
-# )
 
 
 def prompt(llm_input):

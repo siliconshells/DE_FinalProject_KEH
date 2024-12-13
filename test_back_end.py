@@ -3,6 +3,9 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime
 import back_end
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @pytest.fixture
