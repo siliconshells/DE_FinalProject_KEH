@@ -7,8 +7,8 @@ Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu
 [![Test](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/test.yml/badge.svg)](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/test.yml)  
 [![Deploy CloudFormation Stack](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/deploy-cloudformation.yml/badge.svg)](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/deploy-cloudformation.yml)
 ## Project Overview  
-[Click Here to Check Out our Application](https://vhksckmmxw.us-east-1.awsapprunner.com/) 
-[Clich Here for our Demo Video](https://www.youtube.com/watch?v=iQguMlUBems)  
+[CLICK HERE to Check Out Our Application](https://vhksckmmxw.us-east-1.awsapprunner.com/)  
+[CLICK HERE for Our Demo Video](https://www.youtube.com/watch?v=iQguMlUBems)  
 Our project is a recipe suggestion tool designed to help users make the most of the ingredients they already have in their kitchen. Users can select ingredients they may have in their kitchen and our tool will suggest recipes to them that they could make with said ingredients. Our tool provides recipe details, as well as the history of the ingredients inputted, giving the user not only the instructions to make a meal without having to run to the grocery store, but also fun facts about the meal to share around the dinner table. In addition to these search features, our tool includes summary search analytics, showcasing summary statistics of searches made by all users to provide interesting queries of what other chefs are cooking with. 
 
 ## Project Architecture
