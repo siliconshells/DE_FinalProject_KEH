@@ -1,14 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
-from back_end import (
-    app,
-    testing,
-    get_a_secret,
-    get_ingredients,
-    search_recipes,
-    save_user_activity,
-)
+import back_end
 import os
 
 from dotenv import load_dotenv
@@ -18,8 +11,8 @@ load_dotenv()
 
 @pytest.fixture
 def client():
-    app.config["TESTING"] = True
-    with app.test_client() as client:
+    back_end.app.config["TESTING"] = True
+    with back_end.app.test_client() as client:
         yield client
 
 
@@ -31,8 +24,8 @@ def test_get_ingredients(mock_prompt, mock_get_db_connection):
     mock_get_db_connection.return_value = mock_conn
 
     ingredients = "tomato, basil"
-    testing = True
-    result = get_ingredients(ingredients)
+    back_end.testing = True
+    result = back_end.get_ingredients(ingredients)
 
     assert "ingredient_histories" in result
     assert result["ingredient_histories"] == "Short history of ingredients."
@@ -50,8 +43,8 @@ def test_search_recipes(mock_get):
     mock_get.return_value = mock_response
 
     query = "tomato, basil"
-    testing = True
-    recipes = search_recipes(query)
+    back_end.testing = True
+    recipes = back_end.search_recipes(query)
 
     assert recipes == {"hits": ["recipe1", "recipe2"]}
     mock_get.assert_called_with(
@@ -72,8 +65,8 @@ def test_save_user_activity(mock_connect):
     mock_conn.cursor.return_value = mock_cursor
     mock_connect.return_value = mock_conn
 
-    testing = True
-    save_user_activity(mock_conn, datetime.now(), "tomato, basil", "test_user")
+    back_end.testing = True
+    back_end.save_user_activity(mock_conn, datetime.now(), "tomato, basil", "test_user")
 
     mock_cursor.execute.assert_called()
     mock_conn.commit.assert_called()
@@ -91,7 +84,7 @@ def test_report(mock_get_db_connection, client):
         ("2024-12-12 12:00:00", "test_ingredient", "test_user")
     ]
 
-    testing = True
+    back_end.testing = True
     response = client.get("/report/busiest_day")
     assert response.status_code == 200
     mock_cursor.execute.assert_called()
