@@ -59,3 +59,7 @@ Deployment Instructions:
     1. Just push a change or execute an existing Github Action  
 
     Alternatively, you can just push again but the stack will not be updated as the workflow checks if it exists and skip its creation.
+
+9. Use CloudShell
+    Use cloudshell to see how Cloudformation is working and it's especially useful when you get errors. One useful command is:
+    aws cloudformation describe-stack-events --stack-name my-flask-app-stack
