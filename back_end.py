@@ -85,7 +85,7 @@ def prompt(llm_input):
 # Establish database connection
 def get_db_connection(testing=False):
     try:
-        # PostgreSQL connection details
+        # Get RDS PostgreSQL connection details
         DB_CONFIG = {
             "host": get_a_secret("DB_HOST", testing),
             "user": get_a_secret("DB_USER", testing),
