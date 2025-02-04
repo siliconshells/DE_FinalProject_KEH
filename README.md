@@ -7,8 +7,8 @@ Lilah DuBoff, Leonard Eshun, Kayla Haeussler, Uzoma Uwazurike, Jenny Wu
 [![Test](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/test.yml/badge.svg)](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/test.yml)  
 [![Deploy CloudFormation Stack](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/deploy-cloudformation.yml/badge.svg)](https://github.com/siliconshells/DE_FinalProject_KEH/actions/workflows/deploy-cloudformation.yml)
 
-[!NOTE]
->Please note that the payment Edamam service has been stopped hence the service will not work. However, the code works, if you enter details of an active subscription.
+> [!NOTE]  
+> Please note that the payment Edamam service has been stopped hence the service will not work. However, the code works, if you enter details of an active subscription.
 
 ## Project Overview  
 [CLICK HERE to Check Out Our Application](https://vhksckmmxw.us-east-1.awsapprunner.com/)  
